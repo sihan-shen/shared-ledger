@@ -94,7 +94,7 @@ def page_decoration(canvas, doc):
     canvas.drawRightString(w - 42, h - 28, "多人共享记账系统")
     canvas.setStrokeColor(LINE)
     canvas.line(42, 34, w - 42, 34)
-    canvas.drawString(42, 22, "草稿 · 待本人审定 / 241220051 沈思涵")
+    canvas.drawString(42, 22, "241220051 沈思涵")
     canvas.drawRightString(w - 42, 22, str(doc.page))
     canvas.restoreState()
 
@@ -254,7 +254,7 @@ def build():
     if isinstance(story[-1], PageBreak):
         story.pop()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    doc = BaseDocTemplate(str(OUTPUT), pagesize=A4, title="实验二：软件设计与建模 - 多人共享记账系统（草稿）", author="沈思涵（AI辅助草稿，待本人审定）")
+    doc = BaseDocTemplate(str(OUTPUT), pagesize=A4, title="实验二：软件设计与建模 - 多人共享记账系统", author="沈思涵")
     doc.addPageTemplates([make_template("body", A4), make_template("wide", landscape(A2)), make_template("tall", A2), make_template("medium", A3)])
     doc.build(story)
     print(OUTPUT)
