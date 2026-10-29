@@ -213,6 +213,42 @@ def diagram_block(heading, block):
     return result
 
 
+class ScreenshotThumbnail(Flowable):
+    """A fixed preview tile; complete screenshots remain separate attachments."""
+    def __init__(self, target, width, height):
+        super().__init__()
+        self.width, self.height = width, height
+        with PILImage.open(ROOT / target) as image:
+            end = min(image.height, round(image.width * 2.15)) if image.width < 1200 else image.height
+        self.figure = Figure(ROOT / target, width - 4, height - 4, end_pixel=end)
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.setStrokeColor(LINE)
+        self.canv.rect(0, 0, self.width, self.height, stroke=1, fill=0)
+        self.figure.drawOn(self.canv, (self.width - self.figure.width) / 2,
+                           self.height - self.figure.height - 2)
+        self.canv.restoreState()
+
+
+def ui_overview_block(heading, block):
+    entries = [IMAGE_RE.fullmatch(line.strip()).groups() for line in block
+               if IMAGE_RE.fullmatch(line.strip())]
+    column = (landscape(A4)[0] - 84) / 3
+    cells = [[ScreenshotThumbnail(target, column - 12, 180), Spacer(1, 5),
+              para(caption, CAPTION)] for caption, target in entries]
+    while len(cells) % 3:
+        cells.append("")
+    rows = [cells[index:index + 3] for index in range(0, len(cells), 3)]
+    gallery = Table(rows, colWidths=[column] * 3, hAlign="CENTER")
+    gallery.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
+                                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                                ("BOTTOMPADDING", (0, 0), (-1, -1), 7)]))
+    return [NextPageTemplate("gallery"), PageBreak(), para(heading, H1), gallery,
+            NextPageTemplate("body"), PageBreak()]
+
+
 def build():
     lines = SOURCE.read_text().splitlines()
     split = lines.index("<!-- pagebreak -->")
@@ -231,6 +267,17 @@ def build():
         if not line:
             i += 1
             continue
+        if line.startswith("### 5.") and "界面总览" in line:
+            end = i + 1
+            while end < len(lines) and lines[end].strip() != "<!-- /ui-overview -->":
+                end += 1
+            if story and isinstance(story[-1], PageBreak):
+                story.pop()
+                if story and isinstance(story[-1], NextPageTemplate):
+                    story.pop()
+            story.extend(ui_overview_block(line[4:], lines[i + 1:end]))
+            i = end + 1
+            continue
         if line.startswith("### 4.") and not line.startswith("### 4.1 "):
             end = i + 1
             while end < len(lines) and not lines[end].startswith("##"):
@@ -243,7 +290,7 @@ def build():
             i = end
             continue
         if line.startswith("## "):
-            if story and not isinstance(story[-1], PageBreak):
+            if line[3:] in {"四、UML建模", "五、各功能模块UI设计", "六、AI辅助工具使用与本人思考"} and story and not isinstance(story[-1], PageBreak):
                 story.append(PageBreak())
             story.append(para(line[3:], H1))
         elif line.startswith("### "):
@@ -284,7 +331,7 @@ def build():
         story.pop()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     doc = BaseDocTemplate(str(OUTPUT), pagesize=A4, title="实验二：软件设计与建模 - 多人共享记账系统", author="沈思涵")
-    doc.addPageTemplates([make_template("body", A4), make_template("uiwide", landscape(A3)), make_template("wide", landscape(A2)), make_template("tall", A2), make_template("medium", A3)])
+    doc.addPageTemplates([make_template("body", A4), make_template("gallery", landscape(A4)), make_template("uiwide", landscape(A3)), make_template("wide", landscape(A2)), make_template("tall", A2), make_template("medium", A3)])
     doc.build(story)
     print(OUTPUT)
 
