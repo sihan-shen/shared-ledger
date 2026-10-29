@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import math
 from pathlib import Path
 import re
 from xml.sax.saxutils import escape
@@ -58,14 +59,15 @@ def para(text: str, style=BODY) -> Paragraph:
 
 
 class Figure(Flowable):
-    """An image viewport; long current mobile screenshots show a labeled excerpt."""
+    """An image viewport that can show consecutive parts of a long UI screenshot."""
 
-    def __init__(self, path: Path, max_width: float, max_height: float, mobile_excerpt=False):
+    def __init__(self, path: Path, max_width: float, max_height: float, start_pixel=0, end_pixel=None):
         super().__init__()
         with PILImage.open(path) as image:
             self.pixel_width, self.pixel_height = image.size
         self.path = path
-        visible_height = min(self.pixel_height, self.pixel_width * 2.5) if mobile_excerpt else self.pixel_height
+        self.start_pixel = start_pixel
+        visible_height = (end_pixel if end_pixel is not None else self.pixel_height) - start_pixel
         self.scale = min(max_width / self.pixel_width, max_height / visible_height)
         self.width = self.pixel_width * self.scale
         self.height = visible_height * self.scale
@@ -77,7 +79,7 @@ class Figure(Flowable):
         clip.rect(0, 0, self.width, self.height)
         self.canv.clipPath(clip, stroke=0, fill=0)
         total_height = self.pixel_height * self.scale
-        self.canv.drawImage(ImageReader(str(self.path)), 0, self.height - total_height,
+        self.canv.drawImage(ImageReader(str(self.path)), 0, self.height - total_height + self.start_pixel * self.scale,
                             width=self.width, height=total_height, preserveAspectRatio=True, mask="auto")
         self.canv.restoreState()
 
@@ -137,14 +139,52 @@ IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 
 def image_block(caption, target, width=None):
     path = ROOT / target
-    if not path.is_file():
-        raise FileNotFoundError(path)
     with PILImage.open(path) as image:
-        mobile = image.height / image.width > 1.7
-    max_width = width or (240 if mobile else A4[0] - 84)
-    excerpt = path.name in {"home-current.jpg", "entry-current.jpg"}
-    figure = Figure(path, max_width, 440, mobile_excerpt=excerpt)
-    return [figure, Spacer(1, 6), para(caption, CAPTION)]
+        pixel_width, pixel_height = image.size
+    # Desktop UI uses a landscape page so body text in the screenshot stays readable.
+    if pixel_width > 1200:
+        parts = 2 if pixel_height > pixel_width * 1.1 else 1
+        result = []
+        for index in range(parts):
+            start, end = round(pixel_height * index / parts), round(pixel_height * (index + 1) / parts)
+            label = caption + (f"（{index + 1}/{parts}）" if parts > 1 else "")
+            result.extend([NextPageTemplate("uiwide"), PageBreak(),
+                           Figure(path, landscape(A3)[0] - 84, landscape(A3)[1] - 150, start, end),
+                           Spacer(1, 8), para(label, CAPTION)])
+        result.extend([NextPageTemplate("body"), PageBreak()])
+        return result
+    parts = max(1, math.ceil(pixel_height / (pixel_width * 2.2)))
+    boundaries = [0]
+    with PILImage.open(path) as image:
+        rgb = image.convert("RGB")
+        for index in range(1, parts):
+            ideal = round(pixel_height * index / parts)
+            radius = round(pixel_width * .15)
+            candidates = sorted(range(max(ideal - radius, boundaries[-1] + 1), min(ideal + radius, pixel_height - 1)), key=lambda y: abs(y - ideal))
+            # Cut in a blank horizontal strip, keeping text and controls intact.
+            cut = next((y for y in candidates if min(low for low, high in rgb.crop((20, y - 3, pixel_width - 20, y + 4)).getextrema()) > 210), ideal)
+            boundaries.append(cut)
+    boundaries.append(pixel_height)
+    cells = []
+    for index in range(parts):
+        start, end = boundaries[index:index + 2]
+        label = caption + (f"（{index + 1}/{parts}）" if parts > 1 else "")
+        cells.append([Figure(path, 240 if parts > 1 else 250, 550, start, end),
+                      Spacer(1, 6), para(label, CAPTION)])
+    result = []
+    for index in range(0, parts, 2):
+        pair = cells[index:index + 2]
+        if len(pair) == 1:
+            result.append(KeepTogether(pair[0]))
+        else:
+            column = (A4[0] - 84) / 2
+            gallery = Table([pair], colWidths=[column, column], hAlign="CENTER")
+            gallery.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
+                                        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                                        ("RIGHTPADDING", (0, 0), (-1, -1), 4)]))
+            result.append(gallery)
+
+    return result
 
 
 def diagram_block(heading, block):
@@ -226,24 +266,13 @@ def build():
             story.append(Spacer(1, 8))
         elif IMAGE_RE.fullmatch(line):
             caption, target = IMAGE_RE.fullmatch(line).groups()
-            next_i = i + 1
-            while next_i < len(lines) and not lines[next_i].strip():
-                next_i += 1
-            next_image = IMAGE_RE.fullmatch(lines[next_i].strip()) if next_i < len(lines) else None
-            # Pair adjacent portrait reference screens to avoid unnecessary whitespace.
-            if next_image:
-                with PILImage.open(ROOT / target) as first, PILImage.open(ROOT / next_image.group(2)) as second:
-                    pair = first.height / first.width > 1.7 and second.height / second.width > 1.7
-                if pair:
-                    w = (A4[0] - 100) / 2
-                    gallery = Table([[image_block(caption, target, w), image_block(*next_image.groups(), width=w)]], colWidths=[w + 8, w + 8])
-                    gallery.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
-                    story.append(gallery)
-                    i = next_i
-                else:
-                    story.append(KeepTogether(image_block(caption, target)))
-            else:
-                story.append(KeepTogether(image_block(caption, target)))
+            with PILImage.open(ROOT / target) as image:
+                wide = image.width > 1200
+            if wide and story and isinstance(story[-1], PageBreak):
+                story.pop()
+                if story and isinstance(story[-1], NextPageTemplate):
+                    story.pop()
+            story.extend(image_block(caption, target))
         elif line.startswith("- "):
             story.append(Paragraph("• " + inline(line[2:]), BODY))
         elif line == "<!-- pagebreak -->":
@@ -255,7 +284,7 @@ def build():
         story.pop()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     doc = BaseDocTemplate(str(OUTPUT), pagesize=A4, title="实验二：软件设计与建模 - 多人共享记账系统", author="沈思涵")
-    doc.addPageTemplates([make_template("body", A4), make_template("wide", landscape(A2)), make_template("tall", A2), make_template("medium", A3)])
+    doc.addPageTemplates([make_template("body", A4), make_template("uiwide", landscape(A3)), make_template("wide", landscape(A2)), make_template("tall", A2), make_template("medium", A3)])
     doc.build(story)
     print(OUTPUT)
 

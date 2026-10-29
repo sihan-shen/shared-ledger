@@ -1,0 +1,173 @@
+[
+  {
+    "name": "login",
+    "path": "/design/login",
+    "width": 390,
+    "title": "登录与首次改密",
+    "height": 844,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "ledgers",
+    "path": "/design/ledgers",
+    "width": 390,
+    "title": "账本列表",
+    "height": 1024,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "home",
+    "path": "/",
+    "width": 390,
+    "title": "账本首页",
+    "height": 1966,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "members",
+    "path": "/design/members",
+    "width": 1440,
+    "title": "成员与邀请",
+    "height": 1000,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "invite",
+    "path": "/design/invite",
+    "width": 390,
+    "title": "邀请加入",
+    "height": 1048,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "entry",
+    "path": "/entry",
+    "width": 390,
+    "title": "记一笔支出",
+    "height": 1812,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "income",
+    "path": "/design/income",
+    "width": 390,
+    "title": "收入录入",
+    "height": 1619,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "transactions",
+    "path": "/design/transactions",
+    "width": 390,
+    "title": "账目列表",
+    "height": 1507,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "detail",
+    "path": "/design/detail",
+    "width": 390,
+    "title": "账目详情",
+    "height": 1488,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "admin",
+    "path": "/admin",
+    "width": 1440,
+    "title": "审核工作台",
+    "height": 1364,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "review",
+    "path": "/review",
+    "width": 390,
+    "title": "独立审核",
+    "height": 1598,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "correction",
+    "path": "/design/correction",
+    "width": 1440,
+    "title": "更正与作废",
+    "height": 1000,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "budget",
+    "path": "/design/budget",
+    "width": 1440,
+    "title": "预算与统计",
+    "height": 1067,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "settlement",
+    "path": "/settlement",
+    "width": 390,
+    "title": "结算与还款",
+    "height": 1412,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "logs",
+    "path": "/design/logs",
+    "width": 1440,
+    "title": "操作日志",
+    "height": 1000,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "settings",
+    "path": "/design/settings",
+    "width": 1440,
+    "title": "设置与归档",
+    "height": 1000,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "maintainer",
+    "path": "/design/maintainer",
+    "width": 1440,
+    "title": "账号维护",
+    "height": 1086,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "components",
+    "path": "/components",
+    "width": 1440,
+    "title": "组件与规范",
+    "height": 1820,
+    "horizontalOverflow": false,
+    "errors": []
+  },
+  {
+    "name": "screens",
+    "path": "/design",
+    "width": 1440,
+    "title": "全部功能界面",
+    "height": 1053,
+    "horizontalOverflow": false,
+    "errors": []
+  }
+]
