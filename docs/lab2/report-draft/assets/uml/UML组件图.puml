@@ -1,0 +1,85 @@
+@startuml UML组件图
+' 多人共享记账系统 - 组件图（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam componentStyle rectangle
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam componentBorderColor #94A3B8
+skinparam componentBackgroundColor #F8FAFC
+skinparam componentFontColor #0F172A
+skinparam packageBorderColor #CBD5E1
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageFontColor #0F766E
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+skinparam nodesep 26
+skinparam ranksep 42
+left to right direction
+
+package "浏览器（响应式 Web）" {
+  component "用户端 Web 壳\nReact 19 + SDS 风格\n登录 / 记账 / 审核 / 结算" as Mobile
+  component "管理端 Web 壳\nReact 19 + SDS 风格\n成员 / 预算 / 统计 / 日志" as Admin
+  component "共享层\nReact Router · Query · Zustand\nAPI Client · 设计 Tokens" as Shared
+}
+
+component "Nginx\n静态资源 + /api 反向代理" as Nginx
+
+package "FastAPI 应用（单体模块化）" {
+  component "API 层\n鉴权 · 参数校验\n幂等键 · 错误映射" as API
+
+  package "领域模块（同一进程）" as Domain {
+    component "账号" as Auth
+    component "账本" as Ledger
+    component "成员/角色" as Member
+    component "收支/分摊" as Tx
+    component "审核/更正" as Review
+    component "预算" as Budget
+    component "查询/统计" as Query
+    component "还款/结算" as Settle
+    component "审计" as Audit
+  }
+
+  component "Repository\nSQLAlchemy\n事务边界" as Repo
+}
+
+database "PostgreSQL 16\n账本 · 版本 · 分配\n还款 · 日志" as DB
+component "每日 pg_dump\n保留 7 份" as Backup
+
+Mobile --> Shared : 路由 / 状态 / API
+Admin --> Shared : 路由 / 状态 / API
+Mobile --> Nginx
+Admin --> Nginx
+Nginx --> API
+Shared <.. API : OpenAPI → TS 类型
+
+API --> Auth
+API --> Ledger
+API --> Member
+API --> Tx
+API --> Review
+API --> Budget
+API --> Query
+API --> Settle
+API --> Audit
+Domain --> Repo : 领域模块经 Repository 读写；事务边界在应用服务
+Repo --> DB
+DB --> Backup : 备份
+
+note right of Review
+  通过/驳回、更正/作废处理
+  在同一事务内更新：
+  版本 + 预算 + 余额 + 日志
+  并按 REQ-026 统一撤销超限待确认还款。
+end note
+
+note bottom of Shared
+  同一个 Vite 应用，两个 layout / 路由壳，按路由拆包；
+  两端只共享路由、状态、API 客户端和 tokens，
+  不共享业务规则，权限与金额计算全在服务端。
+end note
+@enduml

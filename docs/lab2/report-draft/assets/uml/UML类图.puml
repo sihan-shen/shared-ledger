@@ -1,0 +1,227 @@
+@startuml UML类图
+' 多人共享记账系统 - 领域类图（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam classBorderColor #94A3B8
+skinparam classBackgroundColor #F8FAFC
+skinparam classHeaderBackgroundColor #CCFBF1
+skinparam classFontColor #0F172A
+skinparam classAttributeFontColor #334155
+skinparam classAttributeIconSize 0
+skinparam packageBorderColor #CBD5E1
+skinparam packageBackgroundColor #FFFFFF
+skinparam packageFontColor #0F766E
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+skinparam nodesep 38
+skinparam ranksep 46
+
+package "账号与账本" {
+  class "用户" as User {
+    + id : UUID
+    + account : String
+    + passwordHash : String
+    + status : String
+    + mustChangePwd : Boolean
+    + contact : String
+  }
+
+  class "账本" as Ledger {
+    + id : UUID
+    + name : String
+    + purpose : String
+    + currency : String
+    + status : LedgerStatus
+    + createdBy : UUID
+    + createdAt : DateTime
+  }
+
+  class "成员身份" as Membership {
+    + id : UUID
+    + status : MemberStatus
+    + joinSeq : Integer
+    + joinedAt : DateTime
+    + leftAt : DateTime
+  }
+
+  class "成员角色" as MembershipRole {
+    + role : Role
+    + grantedAt : DateTime
+    + grantedBy : UUID
+    + revokedAt : DateTime
+  }
+
+  class "成员区间" as MembershipPeriod {
+    + joinedAt : DateTime
+    + leftAt : DateTime
+  }
+
+  class "邀请" as Invitation {
+    + id : UUID
+    + tokenHash : String
+    + expiresAt : DateTime
+    + usedAt : DateTime
+    + revokedAt : DateTime
+  }
+}
+
+package "收支与审核" {
+  class "分类" as Category {
+    + id : UUID
+    + ledgerId : UUID
+    + type : TxType
+    + name : String
+    + status : CategoryStatus
+  }
+
+  class "收支" as Transaction {
+    + id : UUID
+    + type : TxType
+    + currentVersionId : UUID?
+    + createdBy : UUID
+    + createdAt : DateTime
+  }
+
+  class "收支版本" as TransactionVersion {
+    + id : UUID
+    + ledgerId : UUID
+    + versionNo : Integer
+    + status : TxStatus
+    + voidedFromStatus : TxStatus?
+    + enteredByMembershipId : UUID
+    + amountCents : Long
+    + occurredOn : LocalDate
+    + note : String
+    + submittedAt : DateTime
+    + approvedAt : DateTime
+    + reviewedAt : DateTime
+  }
+
+  class "分摊/分配" as Allocation {
+    + id : UUID
+    + kind : AllocationKind
+    + amountCents : Long
+  }
+
+  class "更正/作废申请" as ChangeRequest {
+    + id : UUID
+    + type : RequestType
+    + status : RequestStatus
+    + attemptNo : Integer
+    + reason : String
+    + proposedPayload : Json
+    + createdAt : DateTime
+  }
+}
+
+package "预算与结算" {
+  class "月度预算" as Budget {
+    + id : UUID
+    + month : YearMonth
+    + amountCents : Long
+    + updatedBy : UUID
+    + updatedAt : DateTime
+  }
+
+  class "还款" as Repayment {
+    + id : UUID
+    + amountCents : Long
+    + status : RepaymentStatus
+    + createdAt : DateTime
+    + confirmedAt : DateTime
+  }
+
+  class "还款纠错" as RepaymentCorrection {
+    + id : UUID
+    + status : RequestStatus
+    + attemptNo : Integer
+    + correctAmountCents : Long
+    + reason : String
+    + replacementRepaymentId : UUID?
+    + createdAt : DateTime
+  }
+}
+
+package "审计" {
+  class "操作日志" as AuditLog {
+    + id : UUID
+    + ledgerId : UUID?
+    + actorUserId : UUID
+    + actorMembershipId : UUID?
+    + action : String
+    + objectType : String
+    + objectId : UUID
+    + beforeJson : Json
+    + afterJson : Json
+    + reason : String
+    + traceId : String
+    + createdAt : DateTime
+  }
+}
+
+User "1" -- "*" Membership : 拥有 >
+Ledger "1" -- "*" Membership : 包含 >
+Membership "1" *-- "*" MembershipRole : 拥有 >
+Membership "1" *-- "*" MembershipPeriod : 周期 >
+Ledger "1" -- "*" Category : 维护 >
+Ledger "1" -- "*" Invitation : 生成 >
+User "1" -- "*" Invitation : 创建 >
+Membership "1" -- "*" Allocation : 承担 / 享有 >
+Ledger "1" -- "*" Transaction : 记账 >
+Transaction "1" *-- "*" TransactionVersion : 版本 >
+TransactionVersion "1" *-- "*" Allocation : 分摊 >
+TransactionVersion "0..*" -- "1" Membership : 付款/收款人 >
+TransactionVersion "*" -- "1" Membership : 版本录入人 >
+TransactionVersion "*" -- "1" Category : 分类 >
+User "1" -- "*" Transaction : 录入 >
+Transaction "1" -- "0..*" ChangeRequest : 更正 / 作废 >
+ChangeRequest "*" -- "1" TransactionVersion : 依据版本 >
+ChangeRequest "*" -- "1" Membership : 申请人 >
+ChangeRequest "*" -- "0..1" Membership : 处理人 >
+Ledger "1" -- "*" Budget : 月度预算 >
+Ledger "1" -- "*" Repayment : 还款 >
+Repayment "*" -- "1" Membership : 付款方 >
+Repayment "*" -- "1" Membership : 收款方 >
+Repayment "1" -- "*" RepaymentCorrection : 纠错 >
+RepaymentCorrection "*" -- "1" Membership : 申请人 >
+RepaymentCorrection "*" -- "1" Membership : 处理人 >
+RepaymentCorrection "0..1" -- "0..1" Repayment : 替代还款 >
+Ledger "0..1" -- "*" AuditLog : 审计 >
+User "1" -- "*" AuditLog : 操作者 >
+
+legend bottom
+  枚举：Role = ADMIN / REVIEWER / MEMBER，可多值；MemberStatus = ACTIVE / LEFT；
+  TxType = EXPENSE / INCOME；TxStatus = DRAFT / PENDING / APPROVED / REJECTED / WITHDRAWN / VOID / SUPERSEDED；
+  RequestType = CORRECTION / VOID；RequestStatus = PENDING / APPROVED / REJECTED / WITHDRAWN；
+  RepaymentStatus = PENDING / CONFIRMED / REJECTED / CANCELLED。
+  约束：金额用整数分 amountCents；业务日期按北京时间、存储用 UTC；版本模型避免更正重复累计；
+  同一收支最多一个 PENDING 申请；unique(ledger_id,user_id)；join_seq 用于尾差。
+  MembershipRole 至少一项；ADMIN 与 REVIEWER 可并存，管理员不自动获得审核权；
+  角色撤权用 revoked_at 保留历史；MembershipPeriod 保留每次加入/退出区间。
+  Transaction.current_version_id 在首次审核通过时设置；更正通过时迁移；作废时清空。
+  旧版本 SUPERSEDED 后退出计算；AuditLog.ledger_id 可空，仅账号维护类日志为空。
+endlegend
+
+note right of Transaction
+  currentVersionId 指向当前生效版本；
+  首次通过时设置，更正通过时迁移，作废时清空。
+end note
+note bottom of MembershipRole
+  unique(membership_id, role) WHERE revoked_at IS NULL；
+  ADMIN 与 REVIEWER 可并存；撤权保留历史。
+end note
+
+note bottom of MembershipPeriod
+  重入不覆盖旧区间；join_seq 保持不变。
+end note
+note right of AuditLog
+  ledgerId 可空：账号开通/重置日志无账本；
+  查询按原业务授权与 actor 范围过滤。
+end note
+@enduml

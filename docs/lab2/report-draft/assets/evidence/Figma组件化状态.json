@@ -1,0 +1,133 @@
+{
+  "runId": "lab2-componentization-20261026",
+  "fileKey": "OawVRRlprBz939FE6iqxuE",
+  "sessionId": "b27b8385-45ce-46f5-a26f-056852654eef",
+  "updated": "2026-10-27",
+  "scope": "Componentize existing screens 03, 06, 10, 11, 14; do not expand missing screens",
+  "status": "in-progress-via-chrome-use",
+  "step": "Mobile allocation instances, page action buttons, and all eight status tags complete; fields/navigation/business blocks pending",
+  "entities": {
+    "pages": {
+      "components": "1:3",
+      "mobile": "1:4",
+      "admin": "1:5"
+    },
+    "components": {
+      "App/AllocationRow": "19:7069"
+    },
+    "componentChildren": {
+      "member": "19:7066",
+      "amount": "19:7067"
+    },
+    "frames": {
+      "mobileRoot": "16:6519",
+      "home": "16:7044",
+      "expense": "16:7045",
+      "review": "16:7046",
+      "settlement": "16:7047",
+      "adminRoot": "16:6898",
+      "adminReviewDetail": "16:7048",
+      "adminActionBar": "16:7053"
+    },
+    "instances": {
+      "expenseA": "36:23",
+      "reviewA": "37:27",
+      "settlementA": "37:31",
+      "expenseB": "37:35",
+      "reviewB": "37:39",
+      "settlementB": "38:43",
+      "expenseC": "38:47",
+      "reviewC": "38:51",
+      "settlementC": "38:55",
+      "settlementD": "39:59",
+      "draftButton": "43:76",
+      "mobileRejectButton": "44:83",
+      "adminRejectButton": "44:88",
+      "homeReviewButton": "45:99",
+      "homeSettlementButton": "45:104",
+      "repaymentRejectButton": "45:115",
+      "mobilePendingTag": "193:251",
+      "adminPendingTag": "193:255",
+      "approvedTag": "193:259",
+      "pendingConfirmationTag": "193:268",
+      "expenseTypeTag": "193:273",
+      "adminExpenseTypeTag": "193:282",
+      "adminCountTag": "193:290",
+      "adminNavCountTag": "193:298"
+    },
+    "variablesByName": {
+      "App/Text/Default": {
+        "alias": "App/Primitive/Neutral/1000",
+        "value": "#111111",
+        "scope": "TEXT_FILL",
+        "web": "var(--sds-color-text-primary)"
+      },
+      "App/Primitive/Neutral/1000": {
+        "value": "#111111",
+        "scopes": [],
+        "web": "var(--sds-color-neutral-1000)"
+      }
+    },
+    "textStylesByName": {
+      "App/Caption": {
+        "fontSize": 12,
+        "lineHeight": 18,
+        "source": "Native Figma style created and applied to SDS Tag label"
+      }
+    }
+  },
+  "completedSteps": [
+    "Prior-session inventory of five screens",
+    "AllocationRow main with member and amount text properties",
+    "AllocationRow horizontal auto layout",
+    "Text paint semantic-to-primitive alias and CSS mappings",
+    "AllocationRow uses SDS Body Base and Body Strong styles",
+    "Ten mobile AllocationRow linked instances with individual member and amount overrides",
+    "Four mobile primary sketch placeholders removed; native SDS primary instances preserved",
+    "Six secondary page actions replaced by SDS Button Neutral instances at original dimensions",
+    "Eight status/category/count groups replaced by compact SDS Tag instances",
+    "Tag caption uses App/Caption 12/18; height24, variable-backed radius4 and vertical padding0",
+    "Brand count badge bound to App/Brand/Default"
+  ],
+  "pendingValidations": [
+    "Fields, navigation, metric cards, queue rows and business containers",
+    "Admin allocation rows",
+    "Final instance/property/token and visual checks after remaining mutations"
+  ],
+  "currentTurnEvidence": [
+    "Chrome Use connected to existing Figma tab",
+    "Native UI shows AllocationRow and From this file",
+    "Find on mobile reports 10 Instance App/AllocationRow results",
+    "Screenshot reviewed: all four mobile screens preserve amounts and alignment",
+    "Community Scripter launch rejected by automatic approval; continued native UI only",
+    "All-file Find 操作_ reports No results in this file",
+    "All-file Find 状态_ reports No results in this file",
+    "Admin screenshot reviewed after replacements: layout, anonymous names and amounts preserved"
+  ],
+  "priorSessionEvidence": [
+    "Native UI showed AllocationRow component property definitions 成员 and 金额",
+    "No screen replacements had been performed"
+  ],
+  "constraints": [
+    "Figma MCP quota exhausted; no further MCP calls planned",
+    "Third-party Scripter launch not approved; native UI only"
+  ],
+  "nextBatches": [
+    "Consolidated component-page and foundation read, then targeted mobile/admin reads",
+    "Foundation bindings and dependency-ordered main components",
+    "Mobile instance integration and exact placeholder cleanup",
+    "Admin instance integration preserving detail/action bar",
+    "Required visual and structural checks only"
+  ],
+  "notes": [
+    "Original anonymous screens preserved",
+    "No tests or hash checks written or run",
+    "Use native Chrome UI only; no repeated Figma MCP quota checks",
+    "Last interruption occurred during caption style creation; that step has now completed",
+    "Source SVG files are pre-componentization references; continue editing actual Figma nodes"
+  ],
+  "artifacts": [
+    "docs/lab2/figma-draft/mobile-componentization-progress.jpg",
+    "docs/lab2/figma-draft/admin-componentization-progress.jpg"
+  ]
+}

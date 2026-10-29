@@ -1,0 +1,36 @@
+{
+  "snapshotDate": "2026-10-29",
+  "ui": {
+    "home-current.jpg": "ui-prototype/screenshots/home-360.jpg",
+    "entry-current.jpg": "ui-prototype/screenshots/entry-390.jpg",
+    "admin-current.jpg": "ui-prototype/screenshots/admin-1440.jpg",
+    "components-current.jpg": "ui-prototype/screenshots/components-1440.jpg",
+    "mobile-figma.jpg": "figma-draft/mobile-figma.jpg",
+    "admin-figma.jpg": "figma-draft/admin-figma.jpg",
+    "login-legacy.png": "refs/mobile-login.png",
+    "ledgers-legacy.png": "refs/mobile-ledgers.png",
+    "members-legacy.png": "refs/admin-members.png",
+    "income-legacy.png": "refs/mobile-income.png",
+    "list-legacy.png": "refs/mobile-transactions.png",
+    "review-legacy.png": "refs/mobile-review.png",
+    "correction-legacy.png": "refs/admin-correction.png",
+    "budget-legacy.png": "refs/admin-budget.png",
+    "settlement-legacy.png": "refs/mobile-settlement.png",
+    "logs-legacy.png": "refs/admin-logs.png",
+    "settings-legacy.png": "refs/admin-settings.png",
+    "maintainer-legacy.png": "refs/admin-maintainer.png"
+  },
+  "uml": "../uml/*.puml; PNG re-rendered from these snapshots",
+  "note": "Historical refs are static references; current screenshots are browser-memory prototype; Figma images are saved prior screenshots, not reverified online this turn.",
+  "evidence": {
+    "方案草稿.md": "方案草稿.md",
+    "设计审查_gpt61sol.md": "设计审查_gpt61sol.md",
+    "设计审查_gpt6astra_UML.md": "设计审查_gpt6astra_UML.md",
+    "UI原型说明.md": "ui-prototype/README.md",
+    "UI原型核验.md": "ui-prototype/VALIDATION.md",
+    "Figma草图说明.md": "figma-draft/README.md",
+    "Figma组件化计划.md": "figma-draft/componentization-plan.md",
+    "Figma组件化状态.json": "figma-draft/componentization-state.json",
+    "UI提交目录说明.md": "提交目录说明.md"
+  }
+}

@@ -1,0 +1,78 @@
+@startuml UML活动图_审核流程
+' 审核通过/驳回活动图（初稿，带泳道）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam activityBorderColor #94A3B8
+skinparam activityBackgroundColor #F0FDFA
+skinparam activityFontColor #0F172A
+skinparam swimlaneBorderColor #CBD5E1
+skinparam swimlaneTitleBackgroundColor #CCFBF1
+skinparam swimlaneTitleFontColor #0F766E
+
+|成员|
+start
+:填写金额、日期、分类、
+付款人、参与人、备注;
+:选择平均 / 指定分摊;
+|前端|
+:校验金额、日期、成员状态、
+分配合计;
+if (校验通过?) then (否)
+  :字段旁文字提示;
+  stop
+else (是)
+endif
+|成员|
+:保存草稿 或 提交审核;
+|服务端|
+:鉴权 + 账本成员 + 权限;
+:校验分配守恒、版本、成员在册;
+if (仅保存草稿?) then (是)
+  :写草稿 + 审计;
+  stop
+else (否)
+  :写待审核 + 审计;
+endif
+|审核员|
+:打开公共待审队列;
+:查看说明、金额、成员、分类、分配;
+:独立性校验;
+if (审核人 = 录入人?) then (是)
+  :禁用通过/驳回;
+  :提示“不能自审”;
+  stop
+else (否)
+endif
+|服务端|
+:锁账本 + 重查权限/状态/version;
+if (审核通过?) then (是)
+  :同一事务：
+  版本 → 已审核；
+  首次通过设置 current_version_id；
+  仅支出重算发生月预算；
+  重算全账本余额；
+  固定变更后快照，合并失效方向，
+  一次撤销超限/方向失效的待确认；
+  记录自动撤销明细 + 审计;
+  :提交事务;
+  |审核员|
+  :看到最新预算、余额、统计;
+else (否)
+  :版本 → 已驳回 + 原因;
+  :写审计;
+  :提交事务;
+  |成员|
+  :修改后重新提交;
+endif
+stop
+
+legend bottom
+  余额 / 预算 / 状态 / 日志在同一事务内完成；
+  任一步失败整体回滚；重复提交由 Idempotency-Key 保证只生效一次。
+endlegend
+@enduml
