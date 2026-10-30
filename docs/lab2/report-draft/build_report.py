@@ -24,11 +24,11 @@ from reportlab.platypus import (
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "实验二报告草稿.md"
 OUTPUT = ROOT / "output/pdf/实验二_软件设计与建模_草稿.pdf"
-TEAL = colors.HexColor("#0F766E")
-PALE = colors.HexColor("#F0FDFA")
-INK = colors.HexColor("#20252A")
-MUTED = colors.HexColor("#5A626B")
-LINE = colors.HexColor("#DCE5E3")
+ACCENT = colors.HexColor("#303030")
+PALE = colors.HexColor("#F4F4F4")
+INK = colors.HexColor("#202020")
+MUTED = colors.HexColor("#606060")
+LINE = colors.HexColor("#D8D8D8")
 FONT = os.environ.get("REPORT_FONT_REGULAR", "/usr/share/fonts/maple/MapleMonoNL-NF-CN-Regular.ttf")
 BOLD = os.environ.get("REPORT_FONT_BOLD", "/usr/share/fonts/maple/MapleMonoNL-NF-CN-SemiBold.ttf")
 pdfmetrics.registerFont(TTFont("BodyCN", FONT))
@@ -37,7 +37,7 @@ pdfmetrics.registerFontFamily("BodyCN", normal="BodyCN", bold="BoldCN", italic="
 
 BODY = ParagraphStyle("Body", fontName="BodyCN", fontSize=10, leading=17, textColor=INK,
                       wordWrap="CJK", spaceAfter=6, allowWidows=0, allowOrphans=0)
-H1 = ParagraphStyle("H1", parent=BODY, fontName="BoldCN", fontSize=18, leading=26, textColor=TEAL, spaceBefore=4, spaceAfter=16, keepWithNext=True)
+H1 = ParagraphStyle("H1", parent=BODY, fontName="BoldCN", fontSize=18, leading=26, textColor=ACCENT, spaceBefore=4, spaceAfter=16, keepWithNext=True)
 H2 = ParagraphStyle("H2", parent=BODY, fontName="BoldCN", fontSize=12, leading=20, spaceBefore=13, spaceAfter=8, keepWithNext=True)
 CAPTION = ParagraphStyle("Caption", parent=BODY, fontSize=8.5, leading=13, textColor=MUTED, alignment=TA_CENTER, spaceAfter=12)
 SMALL = ParagraphStyle("Small", parent=BODY, fontSize=8, leading=12, spaceAfter=3)
@@ -48,8 +48,8 @@ CELL_HEAD = ParagraphStyle("CellHead", parent=CELL, fontName="BoldCN", textColor
 def inline(text: str) -> str:
     # Preserve text, then add a narrow subset of the Markdown used by this report.
     text = escape(text.strip())
-    text = re.sub(r"\[([^\]]+)\]\((https?://[^\)]+)\)", r'<link href="\2" color="#0F766E">\1</link>', text)
-    text = re.sub(r"`([^`]+)`", r'<font color="#0F766E">\1</font>', text)
+    text = re.sub(r"\[([^\]]+)\]\((https?://[^\)]+)\)", r'<link href="\2" color="#303030">\1</link>', text)
+    text = re.sub(r"`([^`]+)`", r'<font color="#303030">\1</font>', text)
     text = re.sub(r"\*\*([^*]+)\*\*", r'<b>\1</b>', text)
     return text
 
@@ -87,7 +87,7 @@ class Figure(Flowable):
 def page_decoration(canvas, doc):
     w, h = canvas._pagesize
     canvas.saveState()
-    canvas.setStrokeColor(TEAL)
+    canvas.setStrokeColor(ACCENT)
     canvas.setLineWidth(1)
     canvas.line(42, h - 36, w - 42, h - 36)
     canvas.setFont("BodyCN", 8)
@@ -123,12 +123,12 @@ def md_table(lines):
     data = [[para(cell, CELL_HEAD if index == 0 else CELL) for cell in row] for index, row in enumerate(rows)]
     table = Table(data, colWidths=widths, repeatRows=1, hAlign="LEFT", splitByRow=1)
     table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), TEAL),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F7FAF9")]),
+        ("BACKGROUND", (0, 0), (-1, 0), ACCENT),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F5F5F5")]),
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
         ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-        ("LINEBELOW", (0, 0), (-1, 0), .5, TEAL),
+        ("LINEBELOW", (0, 0), (-1, 0), .5, ACCENT),
         ("LINEBELOW", (0, 1), (-1, -1), .35, LINE),
     ]))
     return [table, Spacer(1, 10)]
