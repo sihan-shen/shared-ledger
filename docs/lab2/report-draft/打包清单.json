@@ -1,0 +1,208 @@
+{
+  "archive": "实验2_241220051_沈思涵.zip",
+  "folder": ".stage/实验2_241220051_沈思涵",
+  "reportPages": 15,
+  "fileCount": 39,
+  "umlPngCount": 9,
+  "plantUmlCount": 9,
+  "uiPngCount": 20,
+  "zipBytes": 8407418,
+  "verification": "已解压并逐文件直接比较字节，PDF可读，所有PNG可解码；未执行哈希检查。",
+  "files": [
+    {
+      "source": "output/pdf/实验二_软件设计与建模_草稿.pdf",
+      "target": "实验报告.pdf",
+      "bytes": 4804518
+    },
+    {
+      "source": "assets/uml/UML时序图_审核通过.puml",
+      "target": "UML/UML时序图_审核通过.puml",
+      "bytes": 3150
+    },
+    {
+      "source": "assets/uml/UML时序图_审核通过.png",
+      "target": "UML/UML时序图_审核通过.png",
+      "bytes": 80451
+    },
+    {
+      "source": "assets/uml/UML活动图_审核流程.puml",
+      "target": "UML/UML活动图_审核流程.puml",
+      "bytes": 2021
+    },
+    {
+      "source": "assets/uml/UML活动图_审核流程.png",
+      "target": "UML/UML活动图_审核流程.png",
+      "bytes": 54366
+    },
+    {
+      "source": "assets/uml/UML状态图_收支版本.puml",
+      "target": "UML/UML状态图_收支版本.puml",
+      "bytes": 2101
+    },
+    {
+      "source": "assets/uml/UML状态图_收支版本.png",
+      "target": "UML/UML状态图_收支版本.png",
+      "bytes": 48781
+    },
+    {
+      "source": "assets/uml/UML状态图_更正申请.puml",
+      "target": "UML/UML状态图_更正申请.puml",
+      "bytes": 1445
+    },
+    {
+      "source": "assets/uml/UML状态图_更正申请.png",
+      "target": "UML/UML状态图_更正申请.png",
+      "bytes": 27470
+    },
+    {
+      "source": "assets/uml/UML状态图_还款纠错.puml",
+      "target": "UML/UML状态图_还款纠错.puml",
+      "bytes": 1473
+    },
+    {
+      "source": "assets/uml/UML状态图_还款纠错.png",
+      "target": "UML/UML状态图_还款纠错.png",
+      "bytes": 27355
+    },
+    {
+      "source": "assets/uml/UML用例图.puml",
+      "target": "UML/UML用例图.puml",
+      "bytes": 4112
+    },
+    {
+      "source": "assets/uml/UML用例图.png",
+      "target": "UML/UML用例图.png",
+      "bytes": 238474
+    },
+    {
+      "source": "assets/uml/UML类图.puml",
+      "target": "UML/UML类图.puml",
+      "bytes": 6717
+    },
+    {
+      "source": "assets/uml/UML类图.png",
+      "target": "UML/UML类图.png",
+      "bytes": 277643
+    },
+    {
+      "source": "assets/uml/UML组件图.puml",
+      "target": "UML/UML组件图.puml",
+      "bytes": 2682
+    },
+    {
+      "source": "assets/uml/UML组件图.png",
+      "target": "UML/UML组件图.png",
+      "bytes": 110127
+    },
+    {
+      "source": "assets/uml/UML部署图.puml",
+      "target": "UML/UML部署图.puml",
+      "bytes": 2133
+    },
+    {
+      "source": "assets/uml/UML部署图.png",
+      "target": "UML/UML部署图.png",
+      "bytes": 39582
+    },
+    {
+      "source": "assets/ui/login-current.png",
+      "target": "UI界面/01_账号登录.png",
+      "bytes": 68337
+    },
+    {
+      "source": "assets/ui/password-current.png",
+      "target": "UI界面/01_首次登录改密.png",
+      "bytes": 82277
+    },
+    {
+      "source": "assets/ui/ledgers-current.png",
+      "target": "UI界面/02_账本列表.png",
+      "bytes": 109586
+    },
+    {
+      "source": "assets/ui/home-current.png",
+      "target": "UI界面/03_账本首页.png",
+      "bytes": 269388
+    },
+    {
+      "source": "assets/ui/members-current.png",
+      "target": "UI界面/04_成员与邀请.png",
+      "bytes": 284772
+    },
+    {
+      "source": "assets/ui/invite-current.png",
+      "target": "UI界面/05_邀请加入.png",
+      "bytes": 114815
+    },
+    {
+      "source": "assets/ui/entry-current.png",
+      "target": "UI界面/06_支出录入.png",
+      "bytes": 195671
+    },
+    {
+      "source": "assets/ui/income-current.png",
+      "target": "UI界面/07_收入录入.png",
+      "bytes": 163497
+    },
+    {
+      "source": "assets/ui/transactions-current.png",
+      "target": "UI界面/08_账目列表.png",
+      "bytes": 164051
+    },
+    {
+      "source": "assets/ui/detail-current.png",
+      "target": "UI界面/09_账目详情.png",
+      "bytes": 154746
+    },
+    {
+      "source": "assets/ui/admin-current.png",
+      "target": "UI界面/10_管理审核工作台.png",
+      "bytes": 382269
+    },
+    {
+      "source": "assets/ui/review-current.png",
+      "target": "UI界面/11_移动审核详情.png",
+      "bytes": 210493
+    },
+    {
+      "source": "assets/ui/correction-current.png",
+      "target": "UI界面/12_更正与作废.png",
+      "bytes": 255735
+    },
+    {
+      "source": "assets/ui/budget-current.png",
+      "target": "UI界面/13_预算与统计.png",
+      "bytes": 261710
+    },
+    {
+      "source": "assets/ui/settlement-current.png",
+      "target": "UI界面/14_结算与还款.png",
+      "bytes": 160519
+    },
+    {
+      "source": "assets/ui/logs-current.png",
+      "target": "UI界面/15_操作日志.png",
+      "bytes": 254144
+    },
+    {
+      "source": "assets/ui/settings-current.png",
+      "target": "UI界面/16_设置与归档.png",
+      "bytes": 242059
+    },
+    {
+      "source": "assets/ui/maintainer-current.png",
+      "target": "UI界面/17_账号维护.png",
+      "bytes": 224279
+    },
+    {
+      "source": "assets/ui/components-current.png",
+      "target": "UI界面/18_组件与规范.png",
+      "bytes": 473998
+    },
+    {
+      "source": "assets/ui/screens-current.png",
+      "target": "UI界面/19_功能界面目录.png",
+      "bytes": 218469
+    }
+  ]
+}
