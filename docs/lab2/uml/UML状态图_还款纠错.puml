@@ -1,0 +1,42 @@
+@startuml UML状态图_还款纠错
+' 已确认还款的历史纠错（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam stateBorderColor #94A3B8
+skinparam stateBackgroundColor #F0FDFA
+skinparam stateFontColor #0F172A
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+
+state "处理中" as Pending
+state "已同意" as Approved
+state "已拒绝" as Rejected
+state "已撤回" as Withdrawn
+
+[*] --> Pending : 原付款人发起\n[原还款已确认；无其他处理中申请]
+Pending --> Approved : 原收款人同意\n[本人处理；不得代办]
+Pending --> Rejected : 原收款人拒绝\n[填写原因]
+Pending --> Withdrawn : 原付款人撤回
+Approved --> [*]
+Rejected --> [*] : 原还款不变
+Withdrawn --> [*] : 原还款不变
+
+note right of Pending
+  处理中原还款仍有效；
+  不影响余额，不重新占用建议额度。
+end note
+note bottom of Approved
+  同一事务：撤销原还款；
+  若正确额 > 0，生成正确金额的“已确认”还款；
+  正确额 = 0 时不新建还款；
+  保留原/新关联、处理人和审计日志；
+  同意后调用统一 afterBalanceChange（固定快照/一次撤销）。
+  驳回/撤回后重提 = 新建 attempt，旧实例终结。
+end note
+@enduml

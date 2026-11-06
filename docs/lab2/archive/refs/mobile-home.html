@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>用户端 · 账本首页</title>
+<style>
+  :root{
+    --brand:#0f766e; --brand-2:#14b8a6; --ink:#0f172a; --muted:#64748b; --faint:#94a3b8;
+    --line:#e8edf5; --bg:#f3f6fb; --card:#ffffff; --green:#16a34a; --orange:#d97706; --red:#dc2626;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+  body{font-family:"Noto Sans CJK SC","Noto Sans SC","PingFang SC",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .app{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+  .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:16px;height:16px}
+  .hero{position:relative;height:206px;padding:15px 20px 0;color:#fff;border-radius:0 0 30px 30px;
+    background:linear-gradient(135deg,#115e59 0%,#0f766e 52%,#14b8a6 100%);overflow:hidden}
+  .hero .glow{position:absolute;border-radius:50%;background:rgba(255,255,255,.10);pointer-events:none}
+  .hero .g1{width:190px;height:190px;right:-65px;top:-80px}
+  .hero .g2{width:110px;height:110px;right:80px;bottom:-60px;background:rgba(255,255,255,.06)}
+  .hero .g3{width:60px;height:60px;left:-20px;bottom:-20px;background:rgba(255,255,255,.05)}
+  .brand-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:rgba(255,255,255,.92);letter-spacing:.2px}
+  .logo{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:14px;font-weight:700}
+  .brand-actions{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff;position:relative}
+  .dot-badge{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:#fbbf24;border:1px solid #0f766e}
+  .avatar{width:32px;height:32px;border-radius:50%;background:#fff;color:#0f766e;display:grid;place-items:center;font-weight:700;font-size:13px;border:2px solid rgba(255,255,255,.55)}
+  .ledger-row{position:relative;z-index:1;display:flex;align-items:center;gap:8px;margin-top:15px}
+  .ledger-name{font-size:24px;font-weight:700;letter-spacing:.3px}
+  .people-pill{font-size:10px;line-height:1;background:rgba(255,255,255,.18);padding:4px 8px;border-radius:999px;color:#ccfbf1}
+  .balance-label{margin-top:13px;font-size:11px;color:rgba(255,255,255,.72);letter-spacing:.3px}
+  .balance{display:flex;align-items:baseline;gap:2px;margin-top:1px;font-size:38px;font-weight:700;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
+  .balance .sign{font-size:21px;font-weight:600;margin-right:2px;opacity:.95}
+  .balance .cur{font-size:22px;font-weight:600;margin-right:3px;opacity:.95}
+  .balance .cents{font-size:22px;font-weight:600;opacity:.9}
+  .balance-sub{display:flex;gap:16px;margin-top:5px;font-size:11px;color:rgba(255,255,255,.76)}
+  .balance-sub b{font-weight:600;color:#fff}
+  .content{position:relative;z-index:2;margin-top:-28px;padding:0 16px 80px}
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-radius:18px;padding:10px 4px 9px;
+    box-shadow:0 12px 30px rgba(15,23,42,.09);border:1px solid rgba(255,255,255,.8)}
+  .quick .q{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:#334155}
+  .q-ico{width:40px;height:40px;border-radius:14px;display:grid;place-items:center}
+  .q-ico.blue{background:#e6fffb;color:#0f766e}
+  .q-ico.orange{background:#fff4e5;color:#d97706}
+  .q-ico.green{background:#e9f9ef;color:#16a34a}
+  .badge{position:absolute;top:-3px;right:18px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ef4444;color:#fff;
+    font-size:10px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+  .card{background:var(--card);border-radius:18px;padding:12px 16px;margin-top:10px;border:1px solid #eef2f8;
+    box-shadow:0 5px 16px rgba(15,23,42,.04)}
+  .card-head{display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:13px;font-weight:700;letter-spacing:.2px}
+  .link{font-size:11px;color:var(--brand);display:flex;align-items:center;gap:2px}
+  .budget-top{display:flex;align-items:flex-end;justify-content:space-between;margin-top:7px}
+  .budget-used{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums}
+  .budget-used small{font-size:11px;font-weight:400;color:var(--faint);margin-left:3px}
+  .budget-remain{font-size:11px;color:var(--muted);text-align:right;line-height:1.5}
+  .budget-remain b{font-size:13px;color:var(--ink)}
+  .progress{height:7px;border-radius:99px;background:#eef2f7;overflow:hidden;margin-top:8px}
+  .progress span{display:block;height:100%;width:62%;border-radius:99px;background:linear-gradient(90deg,#0f766e,#2dd4bf)}
+  .budget-foot{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--faint)}
+  .todo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+  .todo-count{font-size:11px;color:var(--muted);background:#f1f5f9;border-radius:99px;padding:2px 8px}
+  .todo-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #f1f5f9}
+  .todo-row:first-of-type{border-top:0;margin-top:2px}
+  .todo-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .todo-dot.orange{background:#f59e0b;box-shadow:0 0 0 3px #fff7ed}
+  .todo-dot.blue{background:#14b8a6;box-shadow:0 0 0 3px #f0fdfa}
+  .todo-main{flex:1;min-width:0}
+  .todo-title{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .todo-sub{font-size:10px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chev{color:#cbd5e1;display:flex;align-items:center}
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin:11px 2px 7px}
+  .section-title{font-size:14px;font-weight:700}
+  .list{background:var(--card);border-radius:18px;padding:1px 14px;border:1px solid #eef2f8;box-shadow:0 5px 16px rgba(15,23,42,.04)}
+  .tx{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9}
+  .tx:last-child{border-bottom:0}
+  .tx-ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:12px;font-weight:700;flex:0 0 auto}
+  .tx-ico.meal{background:#fff4e5;color:#d97706}
+  .tx-ico.home{background:#e6fffb;color:#0f766e}
+  .tx-ico.income{background:#e9f9ef;color:#16a34a}
+  .tx-main{flex:1;min-width:0}
+  .tx-title{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx-sub{font-size:10px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx-right{text-align:right;flex:0 0 auto}
+  .tx-amount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+  .tx-amount.plus{color:var(--green)}
+  .tx-status{display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-size:9px;line-height:1;padding:3px 6px;border-radius:6px}
+  .tx-status.pending{background:#fff7ed;color:#c2410c}
+  .tx-status.ok{background:#edfdf3;color:#15803d}
+  .tabbar{position:absolute;z-index:10;left:0;right:0;bottom:0;height:72px;padding:0 6px 6px;background:rgba(255,255,255,.97);
+    border-top:1px solid #e6eaf2;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;backdrop-filter:blur(12px)}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:#94a3b8;padding-bottom:4px}
+  .tab.active{color:#0f766e;font-weight:600}
+  .fab{width:50px;height:50px;border-radius:50%;margin-top:-26px;background:linear-gradient(135deg,#0f766e,#14b8a6);
+    display:grid;place-items:center;color:#fff;border:4px solid #fff;box-shadow:0 9px 20px rgba(15,118,110,.35)}
+  .fab .icon{width:24px;height:24px;stroke-width:2.2}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.7 12 3l9 7.7V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H19a1 1 0 0 1 1 1v3M3 7.5V17a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3M21 12h-5a2 2 0 0 0 0 4h5z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.7-3.5 3.5-5.2 7-5.2S18.3 16.5 19 20"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6M10 20h4"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="hero">
+    <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+    <div class="brand-row">
+      <div class="brand"><div class="logo">账</div><span>共享账本</span></div>
+      <div class="brand-actions">
+        <div class="icon-btn"><svg class="icon sm"><use href="#i-bell"/></svg><span class="dot-badge"></span></div>
+        <div class="avatar">沈</div>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-name">合租小屋</div>
+      <div class="people-pill">4 人</div>
+      <svg class="icon sm" style="opacity:.8"><use href="#i-chev-d"/></svg>
+    </div>
+    <div class="balance-label">我的净余额</div>
+    <div class="balance"><span class="sign">+</span><span class="cur">¥</span>120<span class="cents">.00</span></div>
+    <div class="balance-sub"><span>应收 <b>¥320.00</b></span><span>应付 <b>¥200.00</b></span></div>
+  </header>
+
+  <main class="content">
+    <section class="quick">
+      <div class="q"><div class="q-ico blue"><svg class="icon"><use href="#i-plus"/></svg></div><span>记一笔</span></div>
+      <div class="q"><div class="q-ico orange"><svg class="icon"><use href="#i-clock"/></svg></div><span>待审核</span><span class="badge">2</span></div>
+      <div class="q"><div class="q-ico green"><svg class="icon"><use href="#i-wallet"/></svg></div><span>去还款</span></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><div class="card-title">10 月预算</div><div class="link">管理 <svg class="icon sm" style="width:12px;height:12px"><use href="#i-chev-r"/></svg></div></div>
+      <div class="budget-top">
+        <div class="budget-used">¥1,860<small>已用</small></div>
+        <div class="budget-remain">剩余 <b>¥1,140</b><br>预算 ¥3,000</div>
+      </div>
+      <div class="progress"><span></span></div>
+      <div class="budget-foot"><span>已使用 62%</span><span>距离超支还有 ¥1,140</span></div>
+    </section>
+
+    <section class="card">
+      <div class="todo-head"><div class="card-title">待办</div><div class="todo-count">3 项</div></div>
+      <div class="todo-row">
+        <span class="todo-dot orange"></span>
+        <div class="todo-main"><div class="todo-title">2 笔支出待你审核</div><div class="todo-sub">餐饮 · 日用品 · 最早提交于 10-25</div></div>
+        <span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+      </div>
+      <div class="todo-row">
+        <span class="todo-dot blue"></span>
+        <div class="todo-main"><div class="todo-title">1 笔还款待确认</div><div class="todo-sub">孙启翔 → 你 · ¥50.00</div></div>
+        <span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+      </div>
+    </section>
+
+    <div class="section-head"><div class="section-title">最近账目</div><div class="link">全部 <svg class="icon sm" style="width:12px;height:12px"><use href="#i-chev-r"/></svg></div></div>
+    <section class="list">
+      <div class="tx">
+        <div class="tx-ico meal">餐</div>
+        <div class="tx-main"><div class="tx-title">周末聚餐</div><div class="tx-sub">10-25 · 沈思涵付款 · 4 人</div></div>
+        <div class="tx-right"><div class="tx-amount">-¥268.00</div><span class="tx-status pending">待审核</span></div>
+      </div>
+      <div class="tx">
+        <div class="tx-ico home">日</div>
+        <div class="tx-main"><div class="tx-title">洗衣液、纸巾</div><div class="tx-sub">10-24 · 孙启翔付款 · 3 人</div></div>
+        <div class="tx-right"><div class="tx-amount">-¥89.90</div><span class="tx-status ok">已审核</span></div>
+      </div>
+      <div class="tx">
+        <div class="tx-ico income">收</div>
+        <div class="tx-main"><div class="tx-title">旧书出售</div><div class="tx-sub">10-23 · 沈思涵收款 · 3 人</div></div>
+        <div class="tx-right"><div class="tx-amount plus">+¥120.00</div><span class="tx-status ok">已审核</span></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <div class="tab active"><svg class="icon"><use href="#i-home"/></svg><span>首页</span></div>
+    <div class="tab"><svg class="icon"><use href="#i-list"/></svg><span>账目</span></div>
+    <div class="tab"><div class="fab"><svg class="icon"><use href="#i-plus"/></svg></div></div>
+    <div class="tab"><svg class="icon"><use href="#i-wallet"/></svg><span>结算</span></div>
+    <div class="tab"><svg class="icon"><use href="#i-user"/></svg><span>我的</span></div>
+  </nav>
+</div>
+</body>
+</html>

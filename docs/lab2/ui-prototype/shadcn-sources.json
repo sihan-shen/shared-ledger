@@ -1,0 +1,58 @@
+{
+  "importedOn": "2026-10-29",
+  "style": "new-york-v4",
+  "components": [
+    {
+      "name": "badge",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/badge.json"
+    },
+    {
+      "name": "button",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/button.json"
+    },
+    {
+      "name": "card",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/card.json"
+    },
+    {
+      "name": "checkbox",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/checkbox.json"
+    },
+    {
+      "name": "dialog",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/dialog.json"
+    },
+    {
+      "name": "input",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/input.json"
+    },
+    {
+      "name": "label",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/label.json"
+    },
+    {
+      "name": "progress",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/progress.json"
+    },
+    {
+      "name": "select",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/select.json"
+    },
+    {
+      "name": "separator",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/separator.json"
+    },
+    {
+      "name": "table",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/table.json"
+    },
+    {
+      "name": "tabs",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/tabs.json"
+    },
+    {
+      "name": "textarea",
+      "url": "https://ui.shadcn.com/r/styles/new-york-v4/textarea.json"
+    }
+  ]
+}

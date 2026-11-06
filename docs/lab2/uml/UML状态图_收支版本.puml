@@ -1,0 +1,60 @@
+@startuml UML状态图_收支版本
+' 收支版本状态机（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam stateBorderColor #94A3B8
+skinparam stateBackgroundColor #F0FDFA
+skinparam stateFontColor #0F172A
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+
+state "草稿" as Draft
+state "待审核" as Pending
+state "已审核\n（当前生效）" as Approved
+state "已驳回" as Rejected
+state "已撤回" as Withdrawn
+state "已作废" as Void
+state "已失效\n（superseded）" as Superseded
+
+[*] --> Draft : 保存草稿 / 新建
+Draft --> Pending : 提交审核\n[金额、日期、成员、分摊校验通过]
+Pending --> Approved : 审核通过\n[审核人 ≠ 录入人]
+Pending --> Rejected : 驳回\n[合格审核员；非录入人；填写原因]
+Pending --> Withdrawn : 本人撤回\n[填写原因]
+Rejected --> Pending : 修改后重提\n[重新校验]
+Withdrawn --> Pending : 修改后重提\n[重新校验]
+Draft --> Void : 作废\n[管理员 / 本人]
+Rejected --> Void : 作废
+Withdrawn --> Void : 作废
+Approved --> Void : 作废申请通过\n[独立审核；current_version_id 置空]
+Approved --> Superseded : 更正申请通过\n[生成新版本，旧版本失效]
+Superseded --> [*]
+Void --> [*]
+
+note right of Pending
+  待审核不能直接作废；
+  须先撤回或驳回。
+end note
+note right of Approved
+  只有「已审核 + 当前版本 + 未作废」
+  参与统计、预算和余额。
+  首次通过时设置 current_version_id；
+  更正通过时指针迁移，旧版本进入 SUPERSEDED；
+  作废通过时 current_version_id 置空。
+end note
+note bottom of Superseded
+  旧版本退出计算，但保留历史；
+  新版本成为 current_version，只计一次。
+end note
+note bottom of Void
+  已作废为终态：
+  不可修改、恢复、提交或审核；
+  需要重记时新建。
+end note
+@enduml

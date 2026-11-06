@@ -1,0 +1,80 @@
+@startuml UML时序图_审核通过
+' 审核通过时序图（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam participantBorderColor #94A3B8
+skinparam participantBackgroundColor #F0FDFA
+skinparam participantFontColor #0F172A
+skinparam databaseBackgroundColor #ECFDF5
+skinparam databaseBorderColor #86EFAC
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+skinparam sequenceMessageAlign left
+autonumber
+
+actor "审核员" as Reviewer
+participant "Web\nReact 19 + SDS" as Web
+participant "ReviewController" as API
+participant "ReviewService" as Svc
+participant "BudgetService" as Budget
+participant "SettlementService" as Settle
+participant "AuditService" as Audit
+database "PostgreSQL" as DB
+
+Reviewer -> Web : 打开待审核详情
+Web -> API : GET /reviews/{id}
+API --> Web : 记录 + 当前版本 + 独立性标记
+Reviewer -> Web : 填写意见，点击“通过”
+Web -> API : POST /reviews/{id}/approve\nIdempotency-Key, version
+API -> API : 鉴权 / 审核角色 / 独立性校验
+API -> DB : BEGIN
+API -> DB : pg_advisory_xact_lock(hash(actor, scope, key))
+API -> DB : SELECT idempotency_key
+
+alt 已完成且同 body
+  API -> DB : ROLLBACK
+  API --> Web : 返回已存结果
+else 首次 / 不同 body
+  alt body 不同
+    API -> DB : ROLLBACK
+    API --> Web : 409 幂等键冲突
+  else 首次
+    group 同一数据库事务
+      API -> DB : SELECT ledger FOR UPDATE
+      API -> DB : SELECT transaction FOR UPDATE
+      API -> DB : SELECT version FOR UPDATE
+      API -> Svc : approve(versionId, reviewerId)
+      Svc -> DB : 锁后重查：成员/角色/账本状态/记录/version
+      Svc -> Svc : 独立性校验：非录入人、非申请人
+      Svc -> DB : UPDATE version → 已审核
+      Svc -> DB : UPDATE current_version_id（首次通过）
+      alt 支出
+        Svc -> Budget : 仅支出：重算 occurredOn 月预算
+        Budget -> DB : UPDATE budget
+      else 收入
+        Svc -> Svc : 收入不占用预算
+      end
+      Svc -> Settle : 重算全账本余额
+      Settle -> DB : 读取成员余额 + 全部待确认 FOR UPDATE
+      Settle -> Settle : 固定快照；合并所有超限/方向失效
+      Settle -> DB : 一次撤销全部失效待确认
+      Settle -> Audit : 记录每笔自动撤销明细
+      Svc -> Audit : 写审核审计（before/after、原因、trace）
+      Audit -> DB : INSERT audit_log
+      Svc -> DB : UPSERT idempotency response
+      Svc -> DB : COMMIT
+    end
+    API --> Web : 200 最新统计 / 预算 / 余额
+    Web --> Reviewer : 刷新队列 + 成功提示
+  end
+end
+
+note over API : 先取同键事务级 advisory lock；\n锁后重查权限/状态/版本；同键串行。\n同键不同 body 直接 409。
+note over Svc, DB : 幂等响应与业务结果同事务 upsert 后提交；\n任一步失败整体 ROLLBACK；冲突返回 409。\n还款确认/还款纠错同意复用同一 afterBalanceChange。
+@enduml

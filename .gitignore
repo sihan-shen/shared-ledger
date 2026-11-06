@@ -1,0 +1,40 @@
+# Dependencies and local tool installations
+**/node_modules/
+**/dist/
+**/.sites-runtime/
+/.cache/
+/.stage/
+/.tmp_view/
+
+# Runtime caches and editor files
+**/__pycache__/
+*.py[cod]
+*.tsbuildinfo
+.DS_Store
+*.swp
+
+# Local credentials and environment overrides
+.env
+.env.*
+!.env.example
+/.agents/
+/.codex/
+/.aws/
+
+# Reproducible report previews and LaTeX build products
+/docs/lab2/report-draft/tmp/
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+/docs/lab1/report/**/*.pdf
+/docs/lab1/report/**/*.png
+
+# Submission packages and their extracted copies remain local
+/submissions/**
+!/submissions/README.md
+*.zip
+
+# Superseded submission staging; original references are kept in archive
+/docs/lab2/archive/submit/

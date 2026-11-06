@@ -150,9 +150,9 @@
     "设计审查_gpt6astra_UML.md": "设计审查_gpt6astra_UML.md",
     "UI原型说明.md": "ui-prototype/README.md",
     "UI原型核验.md": "ui-prototype/VALIDATION.md",
-    "Figma草图说明.md": "figma-draft/README.md",
-    "Figma组件化计划.md": "figma-draft/componentization-plan.md",
-    "Figma组件化状态.json": "figma-draft/componentization-state.json",
+    "Figma草图说明.md": "archive/figma-draft/README.md",
+    "Figma组件化计划.md": "archive/figma-draft/componentization-plan.md",
+    "Figma组件化状态.json": "archive/figma-draft/componentization-state.json",
     "UI提交目录说明.md": "提交目录说明.md",
     "统一界面补充.tsx": "ui-prototype/src/pages/design-pages.tsx",
     "UI截图导出记录.json": "本轮浏览器截图导出记录"

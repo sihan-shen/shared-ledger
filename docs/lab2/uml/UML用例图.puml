@@ -1,0 +1,132 @@
+@startuml UML用例图
+' 多人共享记账系统 - 用例图（初稿，按权限拆分）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam usecaseBorderColor #94A3B8
+skinparam usecaseBackgroundColor #F0FDFA
+skinparam usecaseFontColor #0F172A
+skinparam actorBorderColor #0F766E
+skinparam actorBackgroundColor #CCFBF1
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+skinparam nodesep 30
+skinparam ranksep 38
+left to right direction
+
+actor "已登录账号" as Account
+actor "普通成员" as Member
+actor "审核员" as Reviewer
+actor "管理员" as Admin
+actor "维护人员" as Maint
+actor "退出成员" as Exited
+
+Account <|-- Member
+Member <|-- Reviewer
+Member <|-- Admin
+Account <|-- Exited
+
+rectangle "多人共享记账系统" {
+  usecase "登录 / 首登改密" as UC_Login
+  usecase "账号开通 / 重置" as UC_Account
+  usecase "查看账本 / 历史" as UC_ViewLedger
+  usecase "创建账本（成为管理员）" as UC_CreateLedger
+  usecase "邀请 / 角色 / 移除" as UC_ManageLedger
+  usecase "归档账本" as UC_Archive
+  usecase "重开账本" as UC_Reopen
+  usecase "录入支出 / 收入" as UC_Input
+  usecase "提交 / 撤回 / 重提" as UC_Submit
+  usecase "审核通过 / 驳回" as UC_Audit
+  usecase "申请更正 / 作废" as UC_ApplyChange
+  usecase "处理更正 / 作废" as UC_ProcessChange
+  usecase "查看预算" as UC_ViewBudget
+  usecase "设置月度预算" as UC_SetBudget
+  usecase "查询 / 统计 / 净余额" as UC_Query
+  usecase "登记还款" as UC_RegisterRepay
+  usecase "确认 / 拒绝还款" as UC_ConfirmRepay
+  usecase "撤销待确认还款" as UC_RevokeRepay
+  usecase "还款纠错（本人往来）" as UC_FixRepay
+  usecase "查看操作日志" as UC_ViewLog
+  usecase "归档条件检查" as UC_ArchiveCheck
+  usecase "独立性校验" as UC_Indep
+}
+
+Member --> UC_Login
+Account --> UC_CreateLedger
+Member --> UC_ViewLedger
+Member --> UC_Input
+Member --> UC_Submit
+Member --> UC_ApplyChange
+Member --> UC_ViewBudget
+Member --> UC_Query
+Member --> UC_RegisterRepay
+Member --> UC_ConfirmRepay
+Member --> UC_RevokeRepay
+Member --> UC_FixRepay
+Member --> UC_ViewLog
+Reviewer --> UC_Audit
+Reviewer --> UC_ProcessChange
+Admin --> UC_ManageLedger
+Admin --> UC_Archive
+Admin --> UC_Reopen
+Admin --> UC_SetBudget
+Maint --> UC_Login
+Maint --> UC_Account
+Maint --> UC_ViewLog : 账号维护日志
+Exited --> UC_Login
+Exited --> UC_ViewLedger : 仅历史范围
+Exited --> UC_Query : 仅历史范围
+Exited --> UC_ViewBudget : 历史月份
+Exited --> UC_RegisterRepay : 本人往来
+Exited --> UC_ConfirmRepay : 本人往来
+Exited --> UC_RevokeRepay : 本人往来
+Exited --> UC_FixRepay : 本人往来
+Exited --> UC_ViewLog : 仅历史范围
+
+UC_Audit ..> UC_Indep : <<include>>
+UC_Archive ..> UC_ArchiveCheck : <<include>>
+
+note right of Admin
+  管理员可兼任审核员，
+  但管理员身份本身不带审核权；
+  兼任时按 Reviewer 的用例执行，
+  并继续受独立性与自审禁用约束。
+end note
+
+note right of UC_ProcessChange
+  处理人必须是本账本合格审核员，
+  且不是申请人、不是版本录入人；
+  通过前原记录继续有效。
+end note
+
+note right of UC_Archive
+  只有归档 include 归档条件检查；
+  重开只改变账本状态并留痕。
+end note
+
+note right of UC_CreateLedger
+  只要求已登录，不要求已在任何账本中；
+  创建成功后创建者成为该账本管理员。
+end note
+
+note right of UC_RevokeRepay
+  仅付款人本人，在收款人确认前可撤销；
+  管理员/审核员不得代办。
+end note
+
+note right of UC_FixRepay
+  原付款人发起，原收款人处理；
+  正确额为 0 时不新建还款，
+  原单撤销与正确还款生成同事务。
+end note
+
+note bottom of Exited
+  退出成员不保留管理/审核权；
+  仅保留历史查看、本人往来处理与日志历史范围。
+end note
+@enduml

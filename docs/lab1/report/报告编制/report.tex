@@ -1,0 +1,349 @@
+\documentclass[UTF8,a4paper,11pt,fontset=fandol]{ctexart}
+\usepackage[margin=21mm,top=20mm,bottom=20mm,headheight=15pt,headsep=8mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[unicode,hidelinks]{hyperref}
+\hypersetup{pdftitle={多人共享记账系统需求分析报告},pdfauthor={沈思涵},pdfsubject={软件工程实验一：需求分析}}
+\definecolor{navy}{HTML}{18334A}
+\definecolor{teal}{HTML}{21686F}
+\definecolor{pale}{HTML}{F0F5F7}
+\definecolor{muted}{HTML}{52616B}
+\definecolor{linegray}{HTML}{CBD5DB}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{5pt}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{4pt}
+\linespread{1.18}
+\setlist[itemize]{leftmargin=1.7em,itemsep=2pt,topsep=3pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{muted}软件工程 · 实验一}
+\fancyhead[R]{\small\sffamily\color{muted}多人共享记账系统}
+\fancyfoot[L]{\footnotesize\color{muted}需求分析报告 · 基于 lab1-final}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\ctexset{section={format=\Large\bfseries\color{navy},beforeskip=12pt,afterskip=8pt},subsection={format=\large\bfseries\color{teal},beforeskip=10pt,afterskip=6pt},subsubsection={format=\normalsize\bfseries\color{navy},beforeskip=7pt,afterskip=4pt}}
+\newcommand{\smalltable}{\small\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.25}}
+\newcommand{\captionline}[1]{{\par\centering\small\color{muted}#1\par}}
+\newcommand{\req}[1]{\texttt{REQ-#1}}
+\newcommand{\note}[1]{\par\noindent\colorbox{pale}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small #1}}\par}
+\tikzset{box/.style={draw=teal,rounded corners=2pt,fill=pale,align=center,font=\small,minimum height=12mm,text width=40mm,inner sep=5pt},arrow/.style={-{Stealth[length=2mm]},draw=teal,semithick},state/.style={box,text width=22mm,minimum height=10mm},lbl/.style={font=\footnotesize,fill=white,inner sep=2pt,align=center}}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{navy}需求分析报告}\par
+\vspace{4pt}
+{\Large 多人共享记账系统}\par
+\vspace{7pt}
+{\normalsize 姓名／需求分析师：沈思涵\quad 甲方：孙启翔}\par
+{\small 编制日期：2026年10月24日\quad 报告版本：V1.0}
+\end{center}
+\vspace{-6pt}
+\section{项目概况}
+\subsection{要解决的问题与项目目标}
+项目主要面向合租成员共同记账，典型使用人数为3—10人。水电、日用品、聚餐等费用常由一人垫付，但实际承担者并不总是全体成员；共同物品出售等收入也可能由一人代收。仅记录付款总额，无法直接回答“谁承担多少、谁应收多少、还款是否到账、退款后如何重算”等问题。
+
+系统目标是形成“记录收支—独立审核—分摊与统计—计算往来—线下还款确认”的闭环，使每笔金额、分配结果及更正原因可追溯，并保证多人同时操作时不重复入账、不超额占用还款额度。系统仅记录真实支付在系统外发生后的结果，不直接转移资金。
+
+\subsection{系统范围与阶段边界}
+本实验完成需求分析，为后续设计、实现及测试提供依据；报告中的运行、部署与验收标准是后续系统要求，并不表示本次已经开发或测试完成。
+
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{25mm}Yp{27mm}}
+\toprule
+\rowcolor{pale}范围 & 第一版内容 & 需求定位\\
+\midrule
+账号与共享账本 & 统一开通账号、登录、账本创建、邀请、退出、角色授权、归档与重开 & 001—007、028\\
+收支与业务变更 & 收入、支出、平均／指定金额分配、草稿、提交、撤回、审核、驳回、更正及作废 & 008—017\\
+查账与结算 & 月度支出总预算、多条件查询、分类和成员统计、净余额、线下还款确认及历史纠错 & 018—027\\
+可追溯与质量 & 日志、数据关联、权限隔离、并发完整性、性能、备份恢复、兼容及易用性 & 029—037\\
+实施约束 & 本地或局域网部署、资源准备、交付安排、条件性旧数据迁移 & 038—041\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{明确不实现的内容}
+第一版不实现真实支付与资金托管、银行同步、多币种、公共账户、离线记账、多人共同付款及按比例或份数分摊；图片、导入导出、主动提醒和周期记账延后。不开放自行注册、自助找回、账号注销或业务数据清理；月预算不细分为分类预算或成员预算。
+
+\note{最终需求列表V0.3共有41条：30条功能需求、7条非功能需求、4条约束。其中40条已确认，REQ-040的具体交付日期仍待确认；实际资源和旧数据存量分别待落实、待核查。人数和笔数的性能验收规模不是产品硬上限。}
+
+\newpage
+\section{整体业务分析}
+\subsection{主要业务流程}
+管理员创建账本并邀请成员，按账本配置审核员。成员可替其他在册成员录入收支，但录入人和实际付款／收款人分别保存；审核通过前仅显示预览，通过后才影响正式统计、预算和净余额。线下支付完成后，付款人登记还款，收款人确认到账。
+
+\begin{center}
+\begin{tikzpicture}
+\node[box] (join) at (0,0) {创建账本、邀请加入\\管理员配置角色};
+\node[box] (entry) at (5.2,0) {录入并校验收支\\本人提交审核};
+\node[box] (audit) at (10.4,0) {合格审核员处理\\通过或说明原因驳回};
+\node[box] (stats) at (10.4,-2.05) {通过后生效\\同步统计、预算与余额};
+\node[box] (pay) at (5.2,-2.05) {线下支付、本人登记\\收款人确认到账};
+\node[box] (archive) at (0,-2.05) {余额及待办检查\\管理员归档};
+\draw[arrow] (join)--(entry);
+\draw[arrow] (entry)--(audit);
+\draw[arrow] (audit)--node[lbl,right]{审核通过}(stats);
+\draw[arrow] (stats)--(pay);
+\draw[arrow] (pay)--(archive);
+\draw[arrow] (audit.north)--++(0,0.85)-|node[lbl,pos=0.5,above]{驳回／本人撤回后修改重提}(entry.north);
+\end{tikzpicture}
+\end{center}
+\captionline{图1\quad 共享账本主要流程；更正及历史纠错另走独立申请流程}
+
+\subsubsection{三类用户的职责与权限}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{21mm}YY}
+\toprule
+\rowcolor{pale}用户类型 & 主要职责 & 关键限制\\
+\midrule
+账本管理员 & 邀请、成员与角色管理、预算与分类维护、归档／重开；可发起他人已审核记录的更正或作废 & 管理员身份不自动拥有审核权，不能代成员办理还款或到账确认\\
+审核员 & 处理公共队列中的收支、更正及作废申请，一名合格审核员通过即可 & 不得审核该版本由本人录入或由本人提出的申请；允许审核本人参与付款、收款或分配的记录\\
+普通成员 & 录入收支，修改及撤回本人未审核记录，查看有权数据，办理本人还款 & 不处理审核，不维护角色或预算；不能直接修改他人未生效记录\\
+\bottomrule
+\end{tabularx}
+\end{center}
+管理员可以兼任审核员，但仍受独立审核限制。账号开通、凭据重置及备份维护由乙方负责，维护职责不授予账本内容查看、修改或审核权限。
+
+\subsubsection{退出、重新加入与归档}
+成员退出前应余额为零，无涉及本人的待确认还款、处理中还款纠错、待审核收支及待处理更正／作废；本人草稿、撤回、驳回记录先作废。最后一名管理员或审核员须先补足相应角色。退出后只保留约定历史查看及本人往来处理权限。
+
+重新加入保留原身份、历史与首次加入顺序，默认普通成员，原管理／审核权限须重新授予。归档须检查所有相关成员，包括退出后又产生往来的成员；草稿、撤回和驳回记录不阻止归档，但归档后冻结。归档期间仅可按权限查看或由管理员重开，旧邀请不因重开恢复。
+
+\newpage
+\subsection{主要数据之间的关系}
+用户可以参加多个账本，成员身份承载账本内角色、加入顺序及退出状态。以下说明业务关联与一致性约束，不指定数据库表结构或技术框架。
+
+\begin{center}
+\begin{tikzpicture}
+\node[box,text width=28mm] (user) at (0,0) {用户账号};
+\node[box,text width=40mm] (member) at (5,0) {成员身份\\账本内角色、加入顺序};
+\node[box,text width=28mm] (ledger) at (10,0) {共享账本};
+\draw[arrow] (user)--node[lbl,above]{1 对多}(member);
+\draw[arrow] (ledger)--node[lbl,above]{1 对多}(member);
+\node[box,text width=113mm,minimum height=12mm] (business) at (5,-1.5) {收支及分配、历史版本、审批申请、还款及纠错、分类、月预算、操作记录};
+\draw[arrow] (ledger.south)--++(0,-0.45)-|(business.north);
+\end{tikzpicture}
+\end{center}
+\captionline{图2\quad 核心身份及账本数据归属关系}
+
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{33mm}Y}
+\toprule
+\rowcolor{pale}主要数据关系 & 约束与同步更新规则\\
+\midrule
+用户—成员—账本 & 用户与账本通过成员关联；同一账号在同一账本只有一个成员身份。恢复身份不等于恢复旧角色。\\
+账本—收支／还款／分类 & 每笔收支和还款只属于一个账本，付款、收款、分配成员必须满足同账本关系和历史人员限制；收入与支出分类分别维护。\\
+收支—版本—成员分配 & 每笔只有一名实际付款人或收款人，录入人可不同；分摊／收入分配关联相应收支及成员，金额合计等于总额。同一收支最多一个当前生效版本。\\
+收支—更正／作废申请 & 保存各次申请及其依据的原版本；同一收支最多一项待处理申请。更正通过替换生效版本，作废通过退出计算，不能双重计入新旧版本。\\
+还款—双方成员 & 还款关联账本、付款人与收款人，不强行挂到某一笔消费。待确认同时占用双方额度，确认后才影响净余额。\\
+还款—纠错申请—更正记录 & 每笔原还款最多一项处理中纠错申请；同意时撤销原记录并按正确实付金额生成关联记录，两项整体生效；正确金额为零不新建还款。\\
+账本—月份—支出预算 & 每账本每自然月最多一个有效预算设置；零预算与未设置不同。支出更正跨月时同步扣除旧月、计入新月，收入与还款不占预算。\\
+业务对象—操作日志 & 记录操作者、时间、对象及版本、前后状态／内容、原因、审核结论与关联自动撤销结果；日志查看范围不超过对应业务范围。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{金额、历史和一致性约束}
+收支金额为0.01—99,999.99元、最多两位小数，不允许未来发生日期。平均分配按分向下取整，剩余分按参与者首次加入账本的固定顺序分配；100元三人分为33.34、33.33、33.33元。指定金额允许某人分配零元，但总额必须守恒。
+
+新增记录只选择在册成员。更正历史记录时，只能保留当前版本已有的退出人员，允许调整或移除；移除后重新选择须先重新加入。退出、作废和归档均保留历史关系。业务状态、分配、统计、预算、余额及必要自动撤销和日志须整体成功或整体失败。\hfill{\small\color{muted}依据：REQ-008—010、014、023—026、029—030、033}
+
+\newpage
+\subsection{收支业务状态及允许的转换}
+收入、支出采用相同的六个状态。主记录的状态与更正／作废申请的状态分别保存，不能把申请被驳回误写成原已审核记录退出计算。
+
+\begin{center}
+\begin{tikzpicture}
+\node[state] (draft) at (0,0) {草稿};
+\node[state] (pending) at (4.8,0) {待审核};
+\node[state] (approved) at (9.6,0) {已审核};
+\node[state] (withdrawn) at (2.2,-2.6) {已撤回};
+\node[state] (rejected) at (6.4,-2.6) {已驳回};
+\node[state] (void) at (9.6,-4.3) {已作废};
+\draw[arrow] (draft)--node[lbl,above]{本人提交}(pending);
+\draw[arrow] (pending)--node[lbl,above]{审核通过}(approved);
+\draw[arrow] (pending.south west)--node[lbl,left]{本人撤回}(withdrawn.north east);
+\draw[arrow] (pending.south east)--node[lbl,right]{审核驳回}(rejected.north west);
+\draw[arrow] (withdrawn.south)--(2.2,-3.35)--node[lbl,below]{修改后重提}(4.1,-3.35)--([xshift=-7mm]pending.south);
+\draw[arrow] (rejected.south)--(6.4,-3.8)--node[lbl,below]{修改后重提}(4.8,-3.8)--(pending.south);
+\draw[arrow] (approved)--node[lbl,right,text width=22mm]{独立作废申请\\通过}(void);
+\draw[arrow] (approved) edge[loop above] node[lbl,text width=35mm]{更正申请通过：仍已审核\\新版本替换旧版本}(approved);
+\end{tikzpicture}
+\end{center}
+\captionline{图3\quad 收支主记录六状态；未生效记录直接作废的入口见下表}
+
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{26mm}Yp{30mm}}
+\toprule
+\rowcolor{pale}当前状态 & 允许操作及目标状态 & 参与正式计算\\
+\midrule
+草稿 & 本人修改仍为草稿；提交变待审核；有权者填写原因可作废 & 否，仅预览\\
+待审核 & 本人填写原因撤回；合格审核员通过或填写原因驳回 & 否，仅预览\\
+已撤回、已驳回 & 本人修改状态不变；重新提交变待审核；有权者可作废 & 否，仅预览\\
+已审核 & 不直接修改；发起独立更正或作废申请，审核期间旧版本继续有效 & 是，仅当前生效版本\\
+已作废 & 终态，不能修改、恢复、重新提交或再次审核 & 否，保留历史\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{禁止的转换与更正办理}
+待审核记录不能直接修改或作废，须先撤回或驳回；已审核不能直接撤回、再次审核或覆盖原值；已作废不能恢复。草稿、撤回或驳回记录的直接作废权限为管理员可办理他人记录，其他成员仅可办理本人记录，均须原因。
+
+已审核记录的所有字段变更均重新审核。更正／作废申请由录入人或管理员按权限发起，退款调整仅管理员发起；由另一名合格审核员处理。更正通过只替换当前生效版本，作废通过则退出计算；申请撤回或驳回不改变原账。无合格审核员时保留待审，不自动通过。\hfill{\small\color{muted}依据：REQ-005、011—016、030}
+
+\newpage
+\subsection{还款、更正申请与金额计算}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{23mm}p{45mm}Y}
+\toprule
+\rowcolor{pale}业务对象 & 状态 & 处理及金额影响\\
+\midrule
+普通还款 & 待确认、已确认、已拒绝、已撤销 & 本人登记为待确认；收款人确认或拒绝，付款人可在确认前撤销。确认影响余额，拒绝／撤销释放额度，不自动超时确认。\\
+收支更正／作废申请 & 待处理、已通过、已驳回、已撤回 & 申请人可撤回，合格审核员通过或驳回；通过前旧账有效，驳回／撤回可修改重提并保留历次版本。\\
+还款纠错申请 & 处理中、已同意、已拒绝、已撤回 & 原付款人发起，原收款人处理，管理员不能代办。处理中原还款仍有效；同意后冲回一次，按正确金额形成关联记录。\\
+账本 & 使用中、已归档 & 仅管理员在全部余额及待办检查通过后归档；重开只改变账本状态，保留原账、余额和日志。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{净余额和还款额度}
+\begin{align*}
+\text{净余额}={}&\text{实付支出}-\text{承担支出}+\text{享有收入}-\text{实收收入}\\
+&+\text{已确认付出还款}-\text{已确认收到还款}
+\end{align*}
+
+正数表示应收，负数表示应付，全体相关成员合计为零。可付额度为当前净应付减全部待确认付出，可收额度为当前净应收减全部待确认收款；登记受双方剩余额度限制，确认时排除该笔自身占用。普通还款必须大于零、按分记录，不另设独立固定单笔上限。
+
+余额变更后，固定新余额与全部待确认记录，一次确定所有超限或方向失效的成员及方向，统一撤销相关方向的全部待确认单。不能因中途释放额度缩小本次范围，也不自动改小金额。实际发生过的还款保留；真实退钱另记反向还款，不能同时撤销原记录重复冲账。
+
+\subsubsection{贯穿流程的核算例子}
+A为管理员兼审核员，B为审核员，C为普通成员；C录入，B审核，当月预算200元。单位均为元。
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{Yp{22mm}p{36mm}p{17mm}}
+\toprule
+\rowcolor{pale}操作完成后 & 总收入／总支出 & A／B／C净余额 & 预算已用\\
+\midrule
+A付120、三人均摊的支出被驳回 & 0／0 & 0／0／0 & 0\\
+修正分类重提并审核通过 & 0／120 & +80／−40／−40 & 120\\
+A代收收入90、三人各享有30，审核通过 & 90／120 & +20／−10／−10 & 120\\
+B、C各还A 10，并由A确认 & 90／120 & 0／0／0 & 120\\
+商家退30，原支出更正为90并通过 & 90／90 & −20／+10／+10 & 90\\
+A再各退B、C 10，由双方确认 & 90／90 & 0／0／0 & 90\\
+\bottomrule
+\end{tabularx}
+\end{center}
+\noindent{\small\color{muted}该表是依据已确认规则核算的验收预期，不是软件实测结果。全额退款走原支出作废申请，不新增收入。依据：INT-04-L312及REQ-016、022—026。}
+
+\newpage
+\subsection{主要异常处理与质量要求}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{29mm}Y}
+\toprule
+\rowcolor{pale}异常或边界 & 处理规则及应检查的结果\\
+\midrule
+非法金额或不守恒 & 收支零、负数、超限、超过两位小数、未来日期或分配不平衡均拒绝保存／提交；普通还款零、负数拒绝，不能直接套用收支单笔上限。\\
+连点、重试与状态竞争 & 同次操作只生效一次；两次真实同价消费可分别新建。撤回与审核、两人同时审核或预算并发修改只接受先成功的一次；失败方刷新后处理。\\
+旧页面、越权与归档 & 提交时重查身份、角色、成员状态、账本状态及版本，拒绝使用旧权限；非成员访问不返回私密数据，归档写操作须先重开。\\
+待确认还款超额 & 按同一组数据确定合并撤销范围，相关单只撤销一次。两笔各40而新应收为60时，两笔均撤销，不按顺序保留一笔。\\
+断网或关联更新失败 & 不显示虚假成功；状态、分配、预算、余额、必要撤销及日志整体成功或整体失败。结果不明先查原请求结果，不直接另建。\\
+预算超支和历史更正 & 月预算0—999,999.99元；零预算与未设置不同。超支只提示不阻止记账；按发生日期回算月份，收入和还款不占支出预算。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection{已确认的质量验收目标}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{22mm}Y}
+\toprule
+\rowcolor{pale}类别 & 通过标准与适用条件\\
+\midrule
+性能 & 100用户、目标账本20成员／5,000支出及1,000收入，全系统20,000支出及4,000收入，10独立会话并发；九类操作各100次，至少95次在2秒内完整正确完成，失败不剔除。\\
+环境基准 & 服务端至少2CPU核／4GB／SSD，终端至少4CPU核／8GB；负载端与服务端分开，局域网往返不超50毫秒、上下行不低于10Mbps，实际环境待落实。\\
+安全及可靠性 & 连续5次登录失败暂停15分钟，重试不延长；角色及详情访问隔离，成功操作重登仍完整可查；保存中断不得留下部分业务数据。\\
+备份恢复 & 成功备份间隔不超过24小时，最多丢失24小时数据，接报起4小时内恢复，保留最近7次成功日备份，使用分离介质并做独立恢复演练。\\
+兼容与易用性 & Android Chrome、iPhone Safari、Windows 11 Chrome／Edge；检查360、390、768、1440像素，正文至少16像素。5名合格新用户中至少4人一分钟内提交120元均摊记录并看到预览。\\
+数据留存 & 账本最后一次业务变更起至少保留3年，单纯查看不重算；本期不做清理和注销，达到3年不自动删除。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+\noindent{\small\color{muted}上述为需求及验收目标，尚无性能、兼容、恢复或易用性实测结果。资源清单、设备版本、方案和人员按REQ-039落实，不能事后通过改变环境或剔除失败样本降低标准。}
+
+\newpage
+\section{实验总结}
+\subsection{实际困难、解决方法与审查结果}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{25mm}Yp{27mm}}
+\toprule
+\rowcolor{pale}困难 & 解决方法及实际处理 & 记录依据\\
+\midrule
+任务范围逐步明确 & 早期问卷将收入、预算、审核排除；取得完整任务书后，发现三类用户及这些能力是最低范围，追加调查后再形成完整需求初稿，保留旧答复而不回改。 & INT-01、INT-04\\
+业务关联复杂 & 区分录入人与资金经手人、收入与退款、登记纠错与真实退钱；用贯穿式算例核对净余额、预算及还款影响，正确规则保留。 & REV-005、006\\
+状态与数量表达歧义 & 将“只有一个当前生效版本”澄清为“最多一个”，避免未生效或已作废记录被理解为必须有生效版本；主记录与申请状态分别说明。 & REV-001\\
+准备节点遗漏 & 补回需求评审前提交实际环境、数据和测试方案初稿、备份路径与恢复说明的节点，并保留验收方案评审时锁定版本和名单的节点。 & REV-002\\
+待确认与待落实混淆 & 复核发现“统一精确到分”已有依据，撤回对还款核心规则的过度降级；业务确认与资源准备分别记录，角色及金额边界取得补充确认后关闭。 & REV-003、004；INT-05\\
+沟通记录范围过大 & 按用户指正删去工具参数、执行日志和重复铺录，选录需求相关问答并保留时间与编号；首次完整需求输出单独留存，补充材料只用于可追溯。 & REV-008及后续记录\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{AI整理需求的作用与局限}
+AI有助于把分散答复整理为稳定的REQ编号及规定的10个字段，建立角色、流程、状态、异常和质量要求的检查框架，并利用同一组金额例子检查多处规则。需求来源补充为INT编号后，可以从条目追溯到重要答复，审查不再只依靠记忆。
+
+局限在于：材料不完整时容易沿用过窄范围；自然语言的“唯一”可能没有说明是否允许零条；“规则已确认”与“执行资源尚未落实”容易混淆；审查本身也可能把已约定的通用精度再次判为未知。解决方法是核对原答复、按较晚明确变更处理冲突、保留正确条款，并把真正未决定的内容单独列出，不能通过推测补齐业务决定。
+
+\subsection{人工参与和记录边界}
+本次记录可核对到乙方提出审查要求、纠正交互记录范围、询问待确认原因，并转述甲方同意补充建议；逐条对照和审查记录整理由AI协助完成，留存41条核对结论与8项代表性记录。现有记录未证明乙方已对41条全部完成独立人工签审，本报告不将AI辅助核对等同于真人签审。业务确认也不等于系统实现、迁移或质量测试已经完成。
+
+\newpage
+\section{版本信息}
+\subsection{仓库地址与固定版本}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{31mm}Y}
+\toprule
+\rowcolor{pale}项目 & 实际信息\\
+\midrule
+仓库地址（本地） & \texttt{/home/sihan/Documents/Homework/}软件工程\\
+远程仓库地址 & 未配置；当前没有远程仓库条目\\
+当前分支 & \texttt{master}\\
+初稿标签 & \texttt{lab1-ai-draft}\\
+初稿完整提交编号 & \texttt{2c812f69b3fcb2cf9bbacfd2c1afd3311bb2c668}\\
+最终标签 & \texttt{lab1-final}\\
+最终完整提交编号 & \texttt{a02fbc7bc659e9314b6b4e07c1cdc8a0e1dfaf67}\\
+最终需求文档版本 & V0.3（补充确认稿）\\
+\bottomrule
+\end{tabularx}
+\end{center}
+两个标签均已固定，报告使用的是标签所指提交的完整编号，不使用标签对象编号替代提交编号。报告编制时已核对工作区两份文本与\texttt{lab1-final}中的同名文件内容一致；生成报告不改变两份文本或移动标签。依据课程模板，报告在标签固定后生成，不要求包含在最终标签对应提交中。
+
+\subsection{尚未落实的事项}
+\begin{center}\smalltable
+\begin{tabularx}{\linewidth}{p{35mm}Y}
+\toprule
+\rowcolor{pale}事项 & 当前状态及后续处理\\
+\midrule
+具体交付日期 & REQ-040仍待确认，最终文本附课程项目适用性备注。课程需求分析文档的截止时间与后续软件交付日期分别处理，本报告不补写日期。\\
+实际资源及测试准备 & 机器、软件与浏览器版本、备份路径、执行方案和测试者名单继续按REQ-039落实；已有责任、标准与提交节点不因此撤销。\\
+旧数据及迁移 & 是否有旧流程数据尚待核查。有则提交具体迁移方案并对账；确认无数据才记录本次无需迁移，不假定已经完成核查。\\
+质量验收结果 & 性能、恢复、兼容与易用性目标已确认，后续实施阶段按条件执行验收；当前没有可报告的实测通过结果。\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{依据材料及交付一致性}
+\begin{itemize}
+\item \texttt{requirements.md}：固定最终版本中的REQ-001—REQ-041、来源、验收方法及实施准备清单。
+\item \texttt{chat.txt}：INT-01—INT-04的线上问卷与重要答复，INT-05的乙方转述确认；AI关键交互、首次完整需求输出及REV-001—REV-008和后续复核记录。
+\item 课程报告模板：项目概况、整体业务分析、实验总结、版本信息四部分及提交一致性要求。
+\end{itemize}
+
+最终提交包应仅包含三份文件：\texttt{report.pdf}、\texttt{requirements.md}和\texttt{chat.txt}。
+
+两份文本以 \texttt{lab1-final} 对应内容为准。原问卷、工作过程文件和排版源码作为工作资料保留，不计入上述三份提交文件。
+
+\end{document}

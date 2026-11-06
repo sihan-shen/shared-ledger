@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>管理端 · 待审核</title>
+<style>
+  :root{
+    --brand:#0f766e; --ink:#0f172a; --muted:#64748b; --faint:#94a3b8;
+    --line:#e6eaf2; --bg:#f4f6fb; --card:#fff; --green:#16a34a; --orange:#d97706; --red:#dc2626;
+    --sidebar:#0b1220;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--bg)}
+  body{font-family:"Noto Sans CJK SC","Noto Sans SC","PingFang SC",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;font-size:13px}
+  .icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:14px;height:14px}
+  .app{display:flex;width:1440px;height:900px}
+  .sidebar{width:236px;flex:0 0 auto;background:var(--sidebar);color:#94a3b8;padding:18px 12px 14px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+  .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0f766e,#14b8a6);display:grid;place-items:center;color:#fff;font-size:15px;font-weight:800;box-shadow:0 6px 14px rgba(15,118,110,.3)}
+  .brand-name{color:#f8fafc;font-size:14px;font-weight:700;letter-spacing:.2px}
+  .brand-sub{font-size:9px;color:#64748b;margin-top:2px;letter-spacing:1.2px}
+  .ledger{margin:16px 4px 0;background:#111c2e;border:1px solid #1e293b;border-radius:11px;padding:9px 10px;display:flex;align-items:center;gap:9px}
+  .ledger .dot{width:26px;height:26px;border-radius:8px;background:#115e59;color:#99f6e4;display:grid;place-items:center;font-size:11px;font-weight:700}
+  .ledger .name{color:#e2e8f0;font-size:12px;font-weight:600;line-height:1.3}
+  .ledger .role{font-size:9px;color:#64748b;margin-top:1px}
+  .ledger .chev{margin-left:auto;color:#475569;display:flex}
+  .nav{margin-top:14px}
+  .nav-label{font-size:9px;color:#475569;letter-spacing:1.4px;padding:0 10px;margin:12px 0 5px}
+  .nav-item{height:38px;border-radius:8px;display:flex;align-items:center;gap:10px;padding:0 10px;margin-bottom:2px;font-size:12px;color:#94a3b8}
+  .nav-item .icon{width:17px;height:17px}
+  .nav-item.active{background:#134e4a;color:#fff;box-shadow:inset 3px 0 0 #14b8a6}
+  .nav-item .badge{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#f59e0b;color:#111827;font-size:10px;font-weight:700;display:grid;place-items:center}
+  .nav-item .soon{margin-left:auto;font-size:9px;color:#475569}
+  .side-foot{margin-top:auto;border-top:1px solid #1e293b;padding:12px 6px 0;display:flex;align-items:center;gap:9px}
+  .side-foot .avatar{width:29px;height:29px;border-radius:50%;background:#115e59;color:#ccfbf1;display:grid;place-items:center;font-size:11px;font-weight:700}
+  .side-foot .who{font-size:11px;color:#e2e8f0;font-weight:600}
+  .side-foot .mail{font-size:9px;color:#64748b;margin-top:1px}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:60px;flex:0 0 auto;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px}
+  .crumb{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px}
+  .crumb b{color:#334155;font-weight:600}
+  .search{margin-left:auto;width:250px;height:33px;border-radius:8px;background:#f4f6fb;border:1px solid #e6eaf2;display:flex;align-items:center;gap:7px;padding:0 10px;color:#94a3b8;font-size:11px}
+  .top-icon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:#64748b;background:#f8fafc;border:1px solid #eef2f8;position:relative}
+  .top-icon .dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:#ef4444}
+  .top-avatar{width:31px;height:31px;border-radius:50%;background:#0f766e;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+  .content{flex:1;min-height:0;padding:19px 24px 20px;display:flex;flex-direction:column}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;height:52px;flex:0 0 auto}
+  .title-line{display:flex;align-items:center;gap:10px}
+  h1{font-size:22px;font-weight:700;margin:0;letter-spacing:.2px}
+  .count-pill{height:20px;min-width:26px;padding:0 7px;border-radius:6px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;display:grid;place-items:center}
+  .subtitle{font-size:11px;color:var(--muted);margin-top:5px}
+  .head-actions{display:flex;align-items:center;gap:8px;padding-top:2px}
+  .btn{height:33px;padding:0 12px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#475569;font-family:inherit;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .btn.primary{background:#0f766e;border-color:#0f766e;color:#fff;box-shadow:0 4px 10px rgba(15,118,110,.18)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:13px;flex:0 0 auto}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 15px;display:flex;align-items:center;justify-content:space-between}
+  .stat .label{font-size:10px;color:var(--muted)}
+  .stat .value{font-size:21px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+  .stat .value small{font-size:10px;font-weight:400;color:var(--faint);margin-left:3px}
+  .stat .trend{font-size:10px;color:#15803d;background:#edfdf3;border-radius:5px;padding:2px 5px}
+  .stat .icon-wrap{width:34px;height:34px;border-radius:9px;display:grid;place-items:center}
+  .icon-wrap.orange{background:#fff7ed;color:#d97706}.icon-wrap.blue{background:#f0fdfa;color:#0f766e}.icon-wrap.green{background:#edfdf3;color:#15803d}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 386px;gap:14px;margin-top:13px;flex:1;min-height:0}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:0}
+  .table-panel{display:flex;flex-direction:column}
+  .table-head{height:49px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #eef2f8}
+  .table-title{font-size:13px;font-weight:700}
+  .table-title span{font-size:10px;color:var(--faint);font-weight:400;margin-left:6px}
+  .filters{display:flex;align-items:center;gap:7px}
+  .filter{height:27px;border:1px solid #e6eaf2;border-radius:6px;background:#fbfcfe;color:#64748b;font-size:10px;padding:0 8px;display:flex;align-items:center;gap:4px}
+  .filter.on{background:#f0fdfa;border-color:#99f6e4;color:#0f766e}
+  .thead,.trow{display:grid;grid-template-columns:30px 82px 52px minmax(120px,1fr) 70px 64px 42px 96px 62px;align-items:center;padding:0 13px;column-gap:6px}
+  .thead{height:34px;flex:0 0 auto;background:#f8fafc;border-bottom:1px solid #eef2f8;font-size:9px;color:#94a3b8;letter-spacing:.2px}
+  .tbody{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+  .trow{flex:1;min-height:50px;border-bottom:1px solid #f1f5f9;font-size:11px;color:#334155;cursor:default}
+  .trow.selected{background:#f0fdfa;box-shadow:inset 3px 0 0 #0f766e}
+  .check{width:14px;height:14px;border-radius:4px;border:1px solid #cbd5e1;background:#fff;display:grid;place-items:center}
+  .check.on{background:#0f766e;border-color:#0f766e;color:#fff}
+  .time{font-size:10px;color:#64748b;line-height:1.4}
+  .time b{color:#334155;font-weight:600}
+  .type{display:inline-flex;width:36px;height:19px;border-radius:5px;align-items:center;justify-content:center;font-size:9px;font-weight:600}
+  .type.out{background:#fff7ed;color:#c2410c}.type.in{background:#edfdf3;color:#15803d}
+  .summary{min-width:0}
+  .summary .name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .summary .sub{font-size:9px;color:#94a3b8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .amount{text-align:right;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .amount.in{color:#15803d}
+  .person{display:flex;align-items:center;gap:5px;min-width:0}
+  .avatar{width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700;color:#fff;flex:0 0 auto}
+  .avatar.a{background:#0f766e}.avatar.b{background:#8b5cf6}.avatar.c{background:#f59e0b}.avatar.d{background:#14b8a6}
+  .person span{font-size:10px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .self{font-size:8px;color:#c2410c;background:#fff7ed;padding:1px 4px;border-radius:3px;margin-left:2px}
+  .row-btn{height:24px;border-radius:6px;border:1px solid #99f6e4;background:#f0fdfa;color:#0f766e;font-family:inherit;font-size:9px;font-weight:600}
+  .row-btn:disabled{background:#f8fafc;border-color:#e2e8f0;color:#94a3b8}
+  .table-foot{height:43px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-top:1px solid #eef2f8;font-size:10px;color:#94a3b8}
+  .pages{display:flex;align-items:center;gap:4px}
+  .page{width:22px;height:22px;border-radius:5px;display:grid;place-items:center;border:1px solid #e6eaf2;background:#fff;color:#64748b;font-size:10px}
+  .page.on{background:#0f766e;border-color:#0f766e;color:#fff}
+  .detail-panel{display:flex;flex-direction:column}
+  .detail-head{height:49px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:1px solid #eef2f8}
+  .detail-title{font-size:13px;font-weight:700}
+  .detail-body{flex:1;min-height:0;padding:14px 15px 0;overflow:hidden}
+  .detail-amount{font-size:27px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:5px}
+  .detail-amount .cur{font-size:15px;font-weight:600;color:#475569;margin-right:2px}
+  .detail-tags{display:flex;align-items:center;gap:6px;margin-top:6px}
+  .tag{font-size:9px;line-height:1;padding:4px 6px;border-radius:5px;background:#f1f5f9;color:#64748b}
+  .tag.pending{background:#fff7ed;color:#c2410c}
+  .detail-desc{font-size:11px;color:#475569;line-height:1.6;margin-top:8px}
+  .kv{display:grid;grid-template-columns:58px 1fr;gap:3px 8px;margin-top:10px;font-size:10px;line-height:1.5}
+  .kv .k{color:#94a3b8}.kv .v{color:#334155}
+  .divider{height:1px;background:#eef2f8;margin:12px 0}
+  .sec-title{font-size:10px;color:#64748b;font-weight:700;letter-spacing:.3px;display:flex;justify-content:space-between;align-items:center}
+  .sec-title .muted{font-weight:400;color:#94a3b8;font-size:9px}
+  .alloc{margin-top:7px}
+  .alloc-row{display:flex;align-items:center;gap:7px;height:25px;font-size:10px;color:#475569}
+  .alloc-row .avatar{width:19px;height:19px;font-size:7px}
+  .alloc-row .name{flex:1}
+  .alloc-row .val{font-variant-numeric:tabular-nums;font-weight:600;color:#334155}
+  .alloc-total{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #e2e8f0;margin-top:3px;padding-top:6px;font-size:10px;color:#64748b}
+  .alloc-total b{font-size:11px;color:#0f172a}
+  .verify{margin-top:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 9px;display:flex;gap:7px}
+  .verify .icon{color:#15803d;margin-top:1px}
+  .verify .v-title{font-size:10px;font-weight:700;color:#15803d}
+  .verify .v-sub{font-size:9px;color:#4d7c5a;margin-top:2px;line-height:1.45}
+  .timeline{margin-top:9px}
+  .tl{display:flex;gap:8px;font-size:9px;color:#94a3b8;line-height:1.5;margin-bottom:5px}
+  .tl .dot{width:5px;height:5px;border-radius:50%;background:#cbd5e1;margin-top:4px;flex:0 0 auto}
+  .tl b{color:#475569;font-weight:600}
+  .opinion{margin-top:10px}
+  .opinion-box{margin-top:6px;height:50px;border:1px solid #e2e8f0;background:#fbfcfe;border-radius:8px;padding:8px 9px;font-size:9px;color:#b6c2d2;line-height:1.5}
+  .detail-foot{flex:0 0 auto;border-top:1px solid #eef2f8;padding:10px 15px 12px}
+  .detail-note{font-size:9px;color:#94a3b8;margin-bottom:7px;display:flex;align-items:center;gap:4px}
+  .detail-actions{display:flex;gap:8px}
+  .dbtn{height:34px;border-radius:8px;font-family:inherit;font-size:11px;font-weight:700;flex:1;display:flex;align-items:center;justify-content:center;gap:5px}
+  .dbtn.reject{background:#fff;border:1px solid #fecaca;color:#dc2626;flex:.8}
+  .dbtn.approve{background:#0f766e;border:1px solid #0f766e;color:#fff;box-shadow:0 4px 10px rgba(15,118,110,.2)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.4"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.4"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.4"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="2.8"/><path d="M3.5 19c.6-3 2.8-4.4 5.5-4.4s4.9 1.4 5.5 4.4M16 6.2a2.5 2.5 0 0 1 0 4.6M17.5 14.6c2 .3 3.2 1.7 3.6 4.4"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H19a1 1 0 0 1 1 1v3M3 7.5V17a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3M21 12h-5a2 2 0 0 0 0 4h5z"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9V3Z"/><path d="M15 3.6A9 9 0 0 1 20.4 9H15V3.6Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5V21H6z"/><path d="M13 3.5V9h5M9 13h6M9 16.5h6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 3.4-.2-.1a1.7 1.7 0 0 0-2-.2 1.7 1.7 0 0 0-1 1.5V22h-4v-.4a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-2 .2l-.2.1-2-3.4.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H2v-4h.4a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-3.4.2.1a1.7 1.7 0 0 0 2 .2 1.7 1.7 0 0 0 1-1.5V2h4v.4a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 2-.2l.2-.1 2 3.4-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.4v4h-.4a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6M10 20h4"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5M4.5 20h15"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v6c0 4.3-3 7.3-7 9-4-1.7-7-4.7-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">账</div>
+      <div><div class="brand-name">共享账本</div><div class="brand-sub">LEDGER ADMIN</div></div>
+    </div>
+    <div class="ledger">
+      <div class="dot">合</div>
+      <div><div class="name">合租小屋</div><div class="role">管理员 · 4 名成员</div></div>
+      <span class="chev"><svg class="icon sm"><use href="#i-chev-d"/></svg></span>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">工作台</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-grid"/></svg>概览</div>
+      <div class="nav-item active"><svg class="icon"><use href="#i-clock"/></svg>待审核<span class="badge">12</span></div>
+      <div class="nav-item"><svg class="icon"><use href="#i-list"/></svg>账目</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-users"/></svg>成员与角色</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-wallet"/></svg>预算</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-pie"/></svg>统计</div>
+      <div class="nav-label">系统</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-file"/></svg>操作日志</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-settings"/></svg>账本设置</div>
+      <div class="nav-item"><svg class="icon"><use href="#i-shield"/></svg>归档管理<span class="soon">管理员</span></div>
+    </nav>
+    <div class="side-foot">
+      <div class="avatar">沈</div>
+      <div><div class="who">沈思涵</div><div class="mail">管理员 · shen@example.com</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">合租小屋 <svg class="icon sm" style="width:11px;height:11px"><use href="#i-chev-r"/></svg> <b>待审核</b></div>
+      <div class="search"><svg class="icon sm"><use href="#i-search"/></svg>搜索账目、成员或操作记录</div>
+      <div class="top-icon"><svg class="icon sm"><use href="#i-bell"/></svg><span class="dot"></span></div>
+      <div class="top-avatar">沈</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="title-line"><h1>待审核</h1><span class="count-pill">12</span></div>
+          <div class="subtitle">审核通过后才会进入统计、预算和余额；自录记录不能自审</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn"><svg class="icon sm"><use href="#i-download"/></svg>导出</button>
+          <button class="btn primary"><svg class="icon sm"><use href="#i-check"/></svg>批量审核</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div><div class="label">待审核</div><div class="value">12<small>笔</small></div></div>
+          <div class="icon-wrap orange"><svg class="icon"><use href="#i-clock"/></svg></div>
+        </div>
+        <div class="stat">
+          <div><div class="label">今日提交</div><div class="value">8<small>笔</small></div></div>
+          <div class="icon-wrap blue"><svg class="icon"><use href="#i-list"/></svg></div>
+        </div>
+        <div class="stat">
+          <div><div class="label">本月支出</div><div class="value">¥12,480<small>/ ¥18,000</small></div></div>
+          <span class="trend">69%</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="panel table-panel">
+          <div class="table-head">
+            <div class="table-title">待审队列 <span>按提交时间升序</span></div>
+            <div class="filters">
+              <div class="filter on">全部类型 <svg class="icon" style="width:10px;height:10px"><use href="#i-chev-d"/></svg></div>
+              <div class="filter">全部提交人 <svg class="icon" style="width:10px;height:10px"><use href="#i-chev-d"/></svg></div>
+              <div class="filter">近 7 天 <svg class="icon" style="width:10px;height:10px"><use href="#i-chev-d"/></svg></div>
+            </div>
+          </div>
+          <div class="thead">
+            <div><span class="check on"><svg class="icon" style="width:9px;height:9px"><use href="#i-check"/></svg></span></div>
+            <div>提交时间</div><div>类型</div><div>摘要</div><div style="text-align:right">金额</div><div>付款人</div><div>参与</div><div>提交人</div><div style="text-align:right">操作</div>
+          </div>
+          <div class="tbody">
+            <div class="trow selected">
+              <div><span class="check on"><svg class="icon" style="width:9px;height:9px"><use href="#i-check"/></svg></span></div>
+              <div class="time"><b>10-26 10:12</b><br>今天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">周末聚餐</div><div class="sub">餐饮 · 4 人 · 沈思涵付款</div></div>
+              <div class="amount">¥268.00</div>
+              <div class="person"><span class="avatar a">沈</span><span>沈思涵</span></div>
+              <div>4 人</div>
+              <div class="person"><span class="avatar b">孙</span><span>孙启翔</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-26 09:40</b><br>今天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">洗衣液、纸巾</div><div class="sub">日用品 · 3 人 · 孙启翔付款</div></div>
+              <div class="amount">¥89.90</div>
+              <div class="person"><span class="avatar b">孙</span><span>孙启翔</span></div>
+              <div>3 人</div>
+              <div class="person"><span class="avatar a">沈</span><span>沈思涵</span><span class="self">本人</span></div>
+              <div style="text-align:right"><button class="row-btn" disabled>自审禁用</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 21:18</b><br>昨天</div>
+              <div><span class="type in">收入</span></div>
+              <div class="summary"><div class="name">旧书出售</div><div class="sub">其他收入 · 3 人 · 沈思涵收款</div></div>
+              <div class="amount in">¥120.00</div>
+              <div class="person"><span class="avatar a">沈</span><span>沈思涵</span></div>
+              <div>3 人</div>
+              <div class="person"><span class="avatar c">李</span><span>李同学</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 20:06</b><br>昨天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">水电费</div><div class="sub">水电 · 4 人 · 李同学付款</div></div>
+              <div class="amount">¥186.40</div>
+              <div class="person"><span class="avatar c">李</span><span>李同学</span></div>
+              <div>4 人</div>
+              <div class="person"><span class="avatar c">李</span><span>李同学</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 19:32</b><br>昨天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">外卖</div><div class="sub">餐饮 · 3 人 · 王同学付款</div></div>
+              <div class="amount">¥76.00</div>
+              <div class="person"><span class="avatar d">王</span><span>王同学</span></div>
+              <div>3 人</div>
+              <div class="person"><span class="avatar d">王</span><span>王同学</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 18:10</b><br>昨天</div>
+              <div><span class="type in">收入</span></div>
+              <div class="summary"><div class="name">活动补贴</div><div class="sub">补贴 · 4 人 · 孙启翔收款</div></div>
+              <div class="amount in">¥200.00</div>
+              <div class="person"><span class="avatar b">孙</span><span>孙启翔</span></div>
+              <div>4 人</div>
+              <div class="person"><span class="avatar b">孙</span><span>孙启翔</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 16:45</b><br>昨天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">清洁用品</div><div class="sub">日用品 · 2 人 · 沈思涵付款</div></div>
+              <div class="amount">¥54.60</div>
+              <div class="person"><span class="avatar a">沈</span><span>沈思涵</span></div>
+              <div>2 人</div>
+              <div class="person"><span class="avatar c">李</span><span>李同学</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+            <div class="trow">
+              <div><span class="check"></span></div>
+              <div class="time"><b>10-25 15:20</b><br>昨天</div>
+              <div><span class="type out">支出</span></div>
+              <div class="summary"><div class="name">网费</div><div class="sub">通讯 · 4 人 · 王同学付款</div></div>
+              <div class="amount">¥120.00</div>
+              <div class="person"><span class="avatar d">王</span><span>王同学</span></div>
+              <div>4 人</div>
+              <div class="person"><span class="avatar d">王</span><span>王同学</span></div>
+              <div style="text-align:right"><button class="row-btn">审核</button></div>
+            </div>
+          </div>
+          <div class="table-foot">
+            <span>共 12 条 · 已选 1 条</span>
+            <div class="pages"><span class="page">‹</span><span class="page on">1</span><span class="page">2</span><span class="page">3</span><span class="page">›</span></div>
+          </div>
+        </section>
+
+        <aside class="panel detail-panel">
+          <div class="detail-head"><div class="detail-title">审核详情</div><svg class="icon sm" style="color:#94a3b8"><use href="#i-x"/></svg></div>
+          <div class="detail-body">
+            <div class="detail-tags"><span class="tag pending">待审核</span><span class="tag">支出</span><span class="tag">餐饮</span></div>
+            <div class="detail-amount"><span class="cur">¥</span>268.00</div>
+            <div class="detail-desc">周末聚餐，4 人</div>
+            <div class="kv">
+              <span class="k">发生日期</span><span class="v">2026-10-25（周日）</span>
+              <span class="k">付款人</span><span class="v">沈思涵</span>
+              <span class="k">录入人</span><span class="v">孙启翔 · 10-25 20:14</span>
+              <span class="k">当前版本</span><span class="v">v1 · 未发生更正</span>
+            </div>
+            <div class="divider"></div>
+            <div class="sec-title">分摊明细 <span class="muted">平均分摊</span></div>
+            <div class="alloc">
+              <div class="alloc-row"><span class="avatar a">沈</span><span class="name">沈思涵</span><span class="val">¥67.00</span></div>
+              <div class="alloc-row"><span class="avatar b">孙</span><span class="name">孙启翔</span><span class="val">¥67.00</span></div>
+              <div class="alloc-row"><span class="avatar c">李</span><span class="name">李同学</span><span class="val">¥67.00</span></div>
+              <div class="alloc-row"><span class="avatar d">王</span><span class="name">王同学</span><span class="val">¥67.00</span></div>
+            </div>
+            <div class="alloc-total"><span>合计</span><b>¥268.00 · 已平衡</b></div>
+            <div class="verify">
+              <svg class="icon sm"><use href="#i-shield"/></svg>
+              <div><div class="v-title">独立性校验通过</div><div class="v-sub">审核人不是录入人，也不是更正/作废申请人；参与分摊不影响审核。</div></div>
+            </div>
+            <div class="timeline">
+              <div class="tl"><span class="dot"></span><div><b>10-25 20:14</b> 孙启翔 保存草稿</div></div>
+              <div class="tl"><span class="dot"></span><div><b>10-25 20:15</b> 孙启翔 提交审核</div></div>
+              <div class="tl"><span class="dot"></span><div><b>10-25 20:15</b> 系统 进入公共待审队列</div></div>
+            </div>
+            <div class="opinion">
+              <div class="sec-title">审核意见 <span class="muted">驳回时必填</span></div>
+              <div class="opinion-box">填写原因，例如：分摊与说明不一致，请补充凭证后重新提交。</div>
+            </div>
+          </div>
+          <div class="detail-foot">
+            <div class="detail-note"><svg class="icon" style="width:12px;height:12px"><use href="#i-clock"/></svg>通过后将更新预算、余额与统计，并留存操作日志</div>
+            <div class="detail-actions">
+              <button class="dbtn reject"><svg class="icon sm"><use href="#i-x"/></svg>驳回</button>
+              <button class="dbtn approve"><svg class="icon sm"><use href="#i-check"/></svg>通过</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

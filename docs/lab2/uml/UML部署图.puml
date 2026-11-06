@@ -1,0 +1,65 @@
+@startuml UML部署图
+' 多人共享记账系统 - 部署图（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam nodeBorderColor #94A3B8
+skinparam nodeBackgroundColor #F8FAFC
+skinparam nodeFontColor #0F172A
+skinparam componentBorderColor #94A3B8
+skinparam componentBackgroundColor #FFFFFF
+skinparam databaseBackgroundColor #ECFDF5
+skinparam databaseBorderColor #86EFAC
+skinparam noteBackgroundColor #FFFBEB
+skinparam noteBorderColor #FDE68A
+skinparam noteFontColor #92400E
+skinparam nodesep 30
+skinparam ranksep 38
+
+node "客户端设备" {
+  node "Android 手机\nChrome" as Android
+  node "iPhone\niOS Safari" as iPhone
+  node "Windows 11\nChrome / Edge" as Win
+}
+
+node "应用服务器\n最低 2 CPU / 4 GB / SSD\n（实际资源待 REQ-039 落实）" {
+  component "Nginx\n静态资源 + /api 反向代理" as Nginx
+  component "FastAPI\nUvicorn / 2 workers" as App
+}
+
+node "数据库\nPostgreSQL 16" as DB
+node "备份介质\n独立磁盘 / 离线" as Backup
+component "备份监控\n失败告警" as Monitor
+artifact "恢复操作说明" as Runbook
+
+Android --> Nginx : HTTPS / 局域网
+iPhone --> Nginx : HTTPS / 局域网
+Win --> Nginx : HTTPS / 局域网
+Nginx --> App : /api
+App --> DB : SQL / 5432
+DB --> Backup : 每日 pg_dump\n保留最近 7 次成功备份
+Backup --> Monitor : 失败记录 + 通知
+Runbook ..> DB : 恢复步骤 / 演练
+
+note right of App
+  单体模块化部署；Uvicorn 2 workers；
+  所有实例共享 PostgreSQL 行锁与幂等表，
+  不使用进程内锁；余额相关操作按账本行锁串行化。
+end note
+
+note bottom of DB
+  恢复目标：接报后 4 小时内恢复至可登录、查账、记账；
+  最多允许丢失 24 小时数据。
+end note
+
+note bottom of Backup
+  备份与主数据分离存放；
+  至少保留最近 7 次成功日备份；
+  失败必须记录并通知乙方，不能静默跳过；
+  接报后 4 小时内恢复至可登录/查账/记账。
+end note
+@enduml

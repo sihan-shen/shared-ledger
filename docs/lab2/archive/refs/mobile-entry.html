@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>用户端 · 记一笔支出</title>
+<style>
+  :root{
+    --brand:#0f766e; --brand-2:#14b8a6; --ink:#0f172a; --muted:#64748b; --faint:#94a3b8;
+    --line:#e8edf5; --bg:#f3f6fb; --card:#fff; --green:#16a34a; --orange:#d97706; --red:#dc2626;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+  body{font-family:"Noto Sans CJK SC","Noto Sans SC","PingFang SC",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .app{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+  .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:16px;height:16px}
+  .header{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(255,255,255,.9);border-bottom:1px solid var(--line)}
+  .header .left,.header .right{width:40px;display:flex;align-items:center}
+  .header .right{justify-content:flex-end}
+  .header h1{font-size:16px;font-weight:700;margin:0;letter-spacing:.3px}
+  .icon-btn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#475569}
+  .content{padding:12px 16px 92px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:#e9eef7;margin-bottom:10px}
+  .seg button{height:36px;border:0;border-radius:9px;background:transparent;color:#64748b;font-family:inherit;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+  .seg button.active{background:#fff;color:#0f172a;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+  .seg .minus{color:#dc2626}.seg .plus{color:#16a34a}
+  .amount-card{background:var(--card);border-radius:18px;padding:15px 16px 13px;border:1px solid #e9eef7;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+  .amount-top{display:flex;align-items:center;justify-content:space-between}
+  .amount-label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.4px}
+  .currency{font-size:11px;color:var(--faint);background:#f1f5f9;padding:3px 7px;border-radius:6px}
+  .amount-line{display:flex;align-items:baseline;gap:3px;margin-top:3px;font-variant-numeric:tabular-nums}
+  .amount-line .cur{font-size:23px;font-weight:600;color:#334155}
+  .amount-line .num{font-size:41px;font-weight:700;letter-spacing:-1px;line-height:1.15}
+  .amount-line .num .cents{font-size:23px;font-weight:600;letter-spacing:0;color:#475569}
+  .chips{display:flex;gap:7px;margin-top:9px}
+  .chip{height:27px;padding:0 11px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;font-size:11px;font-family:inherit;font-weight:600}
+  .chip.on{border-color:#99f6e4;background:#f0fdfa;color:#0f766e}
+  .form-card{background:var(--card);border-radius:18px;margin-top:10px;border:1px solid #e9eef7;box-shadow:0 6px 18px rgba(15,23,42,.04);overflow:hidden}
+  .row{display:flex;align-items:center;gap:10px;min-height:51px;padding:0 15px;border-bottom:1px solid #f1f5f9}
+  .row:last-child{border-bottom:0}
+  .row-ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#f1f5f9;color:#64748b;flex:0 0 auto}
+  .row-label{width:64px;font-size:14px;color:var(--muted);flex:0 0 auto}
+  .row-value{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:7px;font-size:16px;font-weight:600;text-align:right}
+  .row-value .sub{font-size:12px;font-weight:400;color:var(--faint)}
+  .chev{color:#cbd5e1;display:flex;align-items:center}
+  .avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;flex:0 0 auto}
+  .avatar.a{background:#0f766e}.avatar.b{background:#8b5cf6}.avatar.c{background:#f59e0b}
+  .avatar.me{background:#0f766e}
+  .avatar-stack{display:flex;align-items:center}
+  .avatar-stack .avatar{margin-left:-6px;border:2px solid #fff}
+  .avatar-stack .avatar:first-child{margin-left:0}
+  .alloc{background:var(--card);border-radius:18px;margin-top:10px;border:1px solid #e9eef7;box-shadow:0 6px 18px rgba(15,23,42,.04);overflow:hidden}
+  .alloc-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px 9px}
+  .alloc-title{font-size:15px;font-weight:700}
+  .alloc-mode{display:flex;align-items:center;gap:2px;font-size:12px;color:#0f766e;background:#f0fdfa;border:1px solid #ccfbf1;padding:3px 6px;border-radius:6px}
+  .alloc-row{display:flex;align-items:center;gap:9px;padding:7px 15px}
+  .alloc-name{font-size:15px;color:#334155;flex:1}
+  .alloc-amount{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .alloc-amount .yuan{font-size:9px;color:var(--faint);font-weight:400;margin-right:2px}
+  .alloc-total{display:flex;align-items:center;justify-content:space-between;margin:2px 15px 0;padding:9px 0 8px;border-top:1px dashed #e2e8f0}
+  .total-label{font-size:13px;color:var(--muted)}
+  .total-value{display:flex;align-items:center;gap:5px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .balanced{display:flex;align-items:center;gap:2px;font-size:10px;color:#15803d;background:#edfdf3;padding:2px 5px;border-radius:5px;font-weight:600}
+  .hint{padding:0 15px 11px;font-size:9px;color:var(--faint)}
+  .note{display:flex;align-items:center;gap:9px;background:var(--card);border-radius:14px;margin-top:10px;padding:0 13px;height:48px;border:1px solid #e9eef7}
+  .note .row-label{width:auto}
+  .note input{border:0;outline:0;flex:1;font-family:inherit;font-size:16px;color:var(--ink);background:transparent}
+  .note input::placeholder{color:#b6c2d2}
+  .note .count{font-size:11px;color:#cbd5e1}
+  .footer{position:absolute;z-index:10;left:0;right:0;bottom:0;height:78px;padding:10px 16px 14px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);display:flex;gap:10px;backdrop-filter:blur(10px)}
+  .btn{height:50px;border-radius:13px;border:0;font-family:inherit;font-size:16px;font-weight:700;flex:1;display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn.ghost{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;flex:.85}
+  .btn.primary{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;box-shadow:0 7px 16px rgba(15,118,110,.25)}
+  .btn .icon{width:18px;height:18px}
+  .footer-note{position:absolute;left:0;right:0;bottom:-18px;text-align:center;font-size:9px;color:#b6c2d2}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3.5v3M16 3.5v3M3.5 10h17"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 13.2 13.2 20a2 2 0 0 1-2.8 0L4 13.6V4h9.6l6.4 6.4a2 2 0 0 1 0 2.8Z"/><circle cx="8" cy="8" r="1.2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="2.8"/><path d="M3.5 19c.6-3 2.8-4.4 5.5-4.4s4.9 1.4 5.5 4.4M16 6.2a2.5 2.5 0 0 1 0 4.6M17.5 14.6c2 .3 3.2 1.7 3.6 4.4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.7-3.5 3.5-5.2 7-5.2S18.3 16.5 19 20"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="header">
+    <div class="left"><div class="icon-btn"><svg class="icon"><use href="#i-back"/></svg></div></div>
+    <h1>记一笔</h1>
+    <div class="right"><div class="icon-btn"><svg class="icon"><use href="#i-more"/></svg></div></div>
+  </header>
+
+  <main class="content">
+    <div class="seg">
+      <button class="active"><svg class="icon sm minus"><use href="#i-minus"/></svg>支出</button>
+      <button><svg class="icon sm plus"><use href="#i-plus"/></svg>收入</button>
+    </div>
+
+    <section class="amount-card">
+      <div class="amount-top"><span class="amount-label">金额</span><span class="currency">CNY</span></div>
+      <div class="amount-line"><span class="cur">¥</span><span class="num">120<span class="cents">.00</span></span></div>
+      <div class="chips"><button class="chip">50</button><button class="chip">100</button><button class="chip">200</button><button class="chip on">自定义</button></div>
+    </section>
+
+    <section class="form-card">
+      <div class="row">
+        <div class="row-ico"><svg class="icon sm"><use href="#i-calendar"/></svg></div>
+        <span class="row-label">日期</span>
+        <div class="row-value">2026-10-26 <span class="sub">今天</span><span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span></div>
+      </div>
+      <div class="row">
+        <div class="row-ico"><svg class="icon sm"><use href="#i-tag"/></svg></div>
+        <span class="row-label">分类</span>
+        <div class="row-value">餐饮 <span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span></div>
+      </div>
+      <div class="row">
+        <div class="row-ico"><svg class="icon sm"><use href="#i-user"/></svg></div>
+        <span class="row-label">付款人</span>
+        <div class="row-value"><span class="avatar me">沈</span>沈思涵 <span class="sub">我</span><span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span></div>
+      </div>
+      <div class="row">
+        <div class="row-ico"><svg class="icon sm"><use href="#i-users"/></svg></div>
+        <span class="row-label">参与人</span>
+        <div class="row-value">
+          <span class="avatar-stack"><span class="avatar a">沈</span><span class="avatar b">孙</span><span class="avatar c">李</span></span>
+          3 人 <span class="chev"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="alloc">
+      <div class="alloc-head"><span class="alloc-title">分摊明细</span><span class="alloc-mode">平均分摊 <svg class="icon" style="width:11px;height:11px"><use href="#i-chev-d"/></svg></span></div>
+      <div class="alloc-row"><span class="avatar me">沈</span><span class="alloc-name">沈思涵</span><span class="alloc-amount"><span class="yuan">¥</span>40.00</span></div>
+      <div class="alloc-row"><span class="avatar b">孙</span><span class="alloc-name">孙启翔</span><span class="alloc-amount"><span class="yuan">¥</span>40.00</span></div>
+      <div class="alloc-row"><span class="avatar c">李</span><span class="alloc-name">李同学</span><span class="alloc-amount"><span class="yuan">¥</span>40.00</span></div>
+      <div class="alloc-total"><span class="total-label">合计</span><span class="total-value">¥120.00 <span class="balanced"><svg class="icon" style="width:10px;height:10px"><use href="#i-check"/></svg>已平衡</span></span></div>
+      <div class="hint">平均分摊的尾差按成员首次加入账本的顺序分配</div>
+    </section>
+
+    <div class="note">
+      <span class="row-label">备注</span>
+      <input placeholder="选填，例如：周末聚餐，4 人">
+      <span class="count">0/200</span>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <button class="btn ghost">保存草稿</button>
+    <button class="btn primary">提交审核 <svg class="icon"><use href="#i-chev-r"/></svg></button>
+  </footer>
+</div>
+</body>
+</html>

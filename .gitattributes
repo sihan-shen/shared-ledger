@@ -1,0 +1,10 @@
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
+
+# Markdown uses trailing spaces for hard line breaks; preserve original document layout.
+*.md whitespace=-blank-at-eol,-blank-at-eof
+# Historical transcripts are verbatim evidence, including their original whitespace.
+docs/lab1/process/chat_*.txt -whitespace

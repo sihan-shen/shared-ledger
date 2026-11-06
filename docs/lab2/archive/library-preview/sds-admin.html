@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Simple Design System · 待审核预览</title>
+<style>
+  :root{
+    --black:#111111; --gray-50:#FAFAFA; --gray-100:#F5F5F5; --gray-200:#E6E6E6; --gray-300:#D9D9D9;
+    --gray-500:#757575; --gray-600:#444444; --white:#FFFFFF; --green:#14AE5C; --green-soft:#EBFFEE;
+    --yellow:#E5A000; --yellow-soft:#FFFBEB; --red:#EC221F; --red-soft:#FEE9E7; --border:#E6E6E6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--white)}
+  body{font-family:Inter,"Noto Sans CJK SC","Noto Sans SC",sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;font-size:13px}
+  .icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:14px;height:14px}
+  .app{display:flex;width:1440px;height:900px}
+  .sidebar{width:220px;flex:0 0 auto;background:var(--white);border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:9px;padding:0 8px}
+  .logo{width:28px;height:28px;border:1px solid var(--black);border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700}
+  .brand-name{font-size:13px;font-weight:600}.brand-sub{font-size:9px;color:var(--gray-500);letter-spacing:.08em;margin-top:1px}
+  .ledger{margin:16px 4px 0;border:1px solid var(--border);border-radius:6px;padding:8px 9px;display:flex;align-items:center;gap:8px}
+  .ledger .dot{width:24px;height:24px;background:var(--gray-100);border-radius:4px;display:grid;place-items:center;font-size:10px;font-weight:600}
+  .ledger .name{font-size:11px;font-weight:600}.ledger .role{font-size:9px;color:var(--gray-500);margin-top:1px}
+  .ledger .chev{margin-left:auto;color:var(--gray-500);display:flex}
+  .nav{margin-top:14px}
+  .nav-label{font-size:9px;color:var(--gray-500);letter-spacing:.1em;padding:0 10px;margin:12px 0 5px}
+  .nav-item{height:36px;border-radius:6px;display:flex;align-items:center;gap:9px;padding:0 10px;margin-bottom:2px;font-size:12px;color:var(--gray-600)}
+  .nav-item.active{background:var(--gray-100);color:var(--black);font-weight:600}
+  .nav-item .badge{margin-left:auto;min-width:18px;height:18px;border-radius:9px;background:var(--black);color:#fff;font-size:9px;display:grid;place-items:center;padding:0 5px}
+  .side-foot{margin-top:auto;border-top:1px solid var(--border);padding:12px 6px 0;display:flex;align-items:center;gap:8px}
+  .side-foot .avatar{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:grid;place-items:center;font-size:10px;font-weight:600}
+  .side-foot .who{font-size:10px;font-weight:600}.side-foot .mail{font-size:8px;color:var(--gray-500);margin-top:1px}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:56px;flex:0 0 auto;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 24px}
+  .crumb{font-size:11px;color:var(--gray-500)}.crumb b{color:var(--black);font-weight:600}
+  .search{margin-left:auto;width:250px;height:32px;background:var(--gray-100);border-radius:6px;display:flex;align-items:center;gap:7px;padding:0 10px;font-size:10px;color:var(--gray-500)}
+  .top-icon{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--gray-600)}
+  .top-avatar{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:grid;place-items:center;font-size:10px;font-weight:600}
+  .content{flex:1;min-height:0;padding:20px 24px;display:flex;flex-direction:column}
+  .page-head{height:54px;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between}
+  .title-row{display:flex;align-items:center;gap:9px}
+  h1{font-size:24px;font-weight:600;margin:0;letter-spacing:-.4px}
+  .count{height:22px;min-width:26px;padding:0 7px;border-radius:4px;background:var(--gray-100);font-size:11px;display:grid;place-items:center;font-weight:600}
+  .subtitle{font-size:11px;color:var(--gray-500);margin-top:4px}
+  .actions{display:flex;gap:8px;padding-top:3px}
+  .btn{height:34px;padding:0 14px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--black);font-family:inherit;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px}
+  .btn.filled{background:var(--black);border-color:var(--black);color:#fff}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:0 0 auto}
+  .stat{border:1px solid var(--border);border-radius:8px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between}
+  .stat .k{font-size:10px;color:var(--gray-500)}.stat .v{font-size:20px;font-weight:600;margin-top:2px}
+  .stat .v small{font-size:10px;font-weight:400;color:var(--gray-500);margin-left:3px}
+  .stat .tag{font-size:9px;background:var(--gray-100);padding:3px 6px;border-radius:4px;color:var(--gray-600)}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:14px;margin-top:14px;flex:1;min-height:0}
+  .panel{border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:0;background:#fff}
+  .panel-head{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid var(--border)}
+  .panel-title{font-size:12px;font-weight:600}
+  .chips{display:flex;gap:5px}
+  .chip{height:26px;padding:0 8px;border:1px solid var(--border);border-radius:5px;font-size:9px;display:flex;align-items:center;gap:3px;color:var(--gray-600)}
+  .chip.on{background:var(--gray-100);border-color:var(--gray-300);color:var(--black);font-weight:600}
+  .table{display:flex;flex-direction:column;height:100%}
+  .thead,.trow{display:grid;grid-template-columns:82px 52px minmax(120px,1fr) 74px 74px 54px 72px 60px;align-items:center;padding:0 13px;column-gap:5px}
+  .thead{height:34px;background:var(--gray-50);border-bottom:1px solid var(--border);font-size:8px;color:var(--gray-500)}
+  .tbody{flex:1;display:flex;flex-direction:column}
+  .trow{flex:1;min-height:44px;border-bottom:1px solid var(--border);font-size:10px;color:var(--black)}
+  .trow.selected{background:var(--gray-100);box-shadow:inset 3px 0 0 var(--black)}
+  .time{font-size:8px;color:var(--gray-500);line-height:1.4}.time b{color:var(--black);font-weight:600}
+  .type{font-size:8px;padding:3px 5px;border:1px solid var(--border);border-radius:3px;background:#fff;text-align:center;color:var(--gray-600)}
+  .summary .n{font-size:10px;font-weight:600}.summary .s{font-size:8px;color:var(--gray-500);margin-top:2px}
+  .amount{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+  .amount.in{color:var(--green)}
+  .person{display:flex;align-items:center;gap:4px;min-width:0}
+  .avatar{width:20px;height:20px;border-radius:50%;background:var(--gray-100);display:grid;place-items:center;font-size:7px;font-weight:600;flex:0 0 auto}
+  .self{font-size:7px;background:var(--red-soft);color:#8A100D;padding:1px 3px;border-radius:3px}
+  .row-btn{height:24px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--black);font-family:inherit;font-size:8px;font-weight:600}
+  .row-btn:disabled{color:var(--gray-500);background:var(--gray-50)}
+  .table-foot{height:40px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 13px;font-size:9px;color:var(--gray-500)}
+  .pages{display:flex;gap:3px}.page{width:22px;height:22px;border:1px solid var(--border);border-radius:4px;display:grid;place-items:center;font-size:9px}
+  .page.on{background:var(--black);border-color:var(--black);color:#fff}
+  .detail{display:flex;flex-direction:column;border-left:1px solid var(--border)}
+  .detail-head{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--border)}
+  .detail-body{padding:13px 14px 0;flex:1;min-height:0}
+  .tags{display:flex;gap:4px}.tag{font-size:8px;padding:3px 5px;border-radius:3px;background:var(--gray-100);color:var(--gray-600)}
+  .tag.warn{background:var(--yellow-soft);color:#7A4D00}.tag.ok{background:var(--green-soft);color:#0B5A2B}
+  .detail-amount{font-size:28px;font-weight:600;letter-spacing:-.6px;margin-top:8px;font-variant-numeric:tabular-nums}
+  .detail-amount .cur{font-size:14px;font-weight:500;margin-right:2px;color:var(--gray-600)}
+  .detail-title{font-size:15px;font-weight:600;margin-top:3px}
+  .meta{font-size:9px;color:var(--gray-500);margin-top:3px;line-height:1.5}
+  .sec-title{display:flex;justify-content:space-between;font-size:9px;font-weight:600;color:var(--gray-600);margin-top:11px}
+  .alloc-row{display:flex;align-items:center;gap:6px;font-size:9px;padding:5px 0}
+  .alloc-row .name{flex:1}.alloc-row .val{font-weight:600;font-variant-numeric:tabular-nums}
+  .total{display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:7px;font-size:9px;color:var(--gray-500)}
+  .total b{color:var(--black)}
+  .verify{margin-top:9px;background:var(--green-soft);border:1px solid #CFF7D3;border-radius:6px;padding:8px 9px;display:flex;gap:6px}
+  .verify .icon{color:var(--green);margin-top:1px}.verify .t{font-size:9px;font-weight:700;color:#0B5A2B}.verify .s{font-size:8px;color:#2D4D1F;line-height:1.5;margin-top:2px}
+  .opinion{margin-top:9px}.opinion .l{display:flex;justify-content:space-between;font-size:8px;color:var(--gray-500);font-weight:600}
+  .opinion .box{margin-top:5px;height:44px;border:1px solid var(--border);border-radius:6px;background:var(--gray-50);padding:7px 8px;font-size:8px;color:var(--gray-500)}
+  .detail-foot{border-top:1px solid var(--border);padding:10px 14px 12px;display:flex;gap:7px}
+  .dbtn{height:34px;border-radius:6px;flex:1;font-family:inherit;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px}
+  .dbtn.ghost{background:#fff;border:1px solid var(--border);color:var(--black)}
+  .dbtn.fill{background:var(--black);border:1px solid var(--black);color:#fff}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.4"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.4"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.4"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="2.8"/><path d="M3.5 19c.6-3 2.8-4.4 5.5-4.4s4.9 1.4 5.5 4.4M16 6.2a2.5 2.5 0 0 1 0 4.6M17.5 14.6c2 .3 3.2 1.7 3.6 4.4"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14v4M3 7v10a2 2 0 0 0 2 2h14v-4M21 12h-5a2 2 0 0 0 0 4h5z"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9V3Z"/><path d="M15 3.6A9 9 0 0 1 20.4 9H15V3.6Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h7l5 5V21H6z"/><path d="M13 3.5V9h5M9 13h6M9 16.5h6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 3.4-.2-.1a1.7 1.7 0 0 0-2-.2 1.7 1.7 0 0 0-1 1.5V22h-4v-.4a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-2 .2l-.2.1-2-3.4.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H2v-4h.4a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2-3.4.2.1a1.7 1.7 0 0 0 2 .2 1.7 1.7 0 0 0 1-1.5V2h4v.4a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 2-.2l.2-.1 2 3.4-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.4v4h-.4a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6M10 20h4"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v6c0 4.3-3 7.3-7 9-4-1.7-7-4.7-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">L</div><div><div class="brand-name">共享账本</div><div class="brand-sub">LEDGER ADMIN</div></div></div>
+    <div class="ledger"><div class="dot">合</div><div><div class="name">合租小屋</div><div class="role">管理员 · 4 名成员</div></div><span class="chev"><svg class="icon sm"><use href="#i-chev"/></svg></span></div>
+    <nav class="nav">
+      <div class="nav-label">工作台</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-grid"/></svg>概览</div>
+      <div class="nav-item active"><svg class="icon sm"><use href="#i-clock"/></svg>待审核<span class="badge">12</span></div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-list"/></svg>账目</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-users"/></svg>成员与角色</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-wallet"/></svg>预算</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-pie"/></svg>统计</div>
+      <div class="nav-label">系统</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-file"/></svg>操作日志</div>
+      <div class="nav-item"><svg class="icon sm"><use href="#i-settings"/></svg>账本设置</div>
+    </nav>
+    <div class="side-foot"><div class="avatar">沈</div><div><div class="who">沈思涵</div><div class="mail">管理员 · shen@example.com</div></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="crumb">合租小屋 <span style="color:var(--gray-300)">›</span> <b>待审核</b></div><div class="search"><svg class="icon sm"><use href="#i-search"/></svg>搜索账目、成员或日志</div><div class="top-icon"><svg class="icon sm"><use href="#i-bell"/></svg></div><div class="top-avatar">沈</div></header>
+    <div class="content">
+      <div class="page-head"><div><div class="title-row"><h1>待审核</h1><span class="count">12</span></div><div class="subtitle">审核通过后更新统计、预算和余额；自录记录不能自审</div></div><div class="actions"><button class="btn">导出</button><button class="btn filled">批量审核</button></div></div>
+      <div class="stats">
+        <div class="stat"><div><div class="k">待审核</div><div class="v">12<small>笔</small></div></div><span class="tag">按提交时间</span></div>
+        <div class="stat"><div><div class="k">今日提交</div><div class="v">8<small>笔</small></div></div><span class="tag">+3</span></div>
+        <div class="stat"><div><div class="k">本月支出</div><div class="v">¥12,480<small>/ ¥18,000</small></div></div><span class="tag">69%</span></div>
+      </div>
+      <div class="grid">
+        <section class="panel table">
+          <div class="panel-head"><div class="panel-title">待审队列</div><div class="chips"><div class="chip on">全部类型</div><div class="chip">全部提交人</div><div class="chip">近 7 天</div></div></div>
+          <div class="thead"><div>提交时间</div><div>类型</div><div>摘要</div><div style="text-align:right">金额</div><div>付款人</div><div>参与</div><div>提交人</div><div style="text-align:right">操作</div></div>
+          <div class="tbody">
+            <div class="trow selected"><div class="time"><b>10-26 10:12</b><br>今天</div><div><span class="type">支出</span></div><div class="summary"><div class="n">周末聚餐</div><div class="s">餐饮 · 4 人</div></div><div class="amount">¥268.00</div><div class="person"><span class="avatar">沈</span>沈思涵</div><div>4 人</div><div class="person"><span class="avatar">孙</span>孙启翔</div><div style="text-align:right"><button class="row-btn">审核</button></div></div>
+            <div class="trow"><div class="time"><b>10-26 09:40</b><br>今天</div><div><span class="type">支出</span></div><div class="summary"><div class="n">洗衣液、纸巾</div><div class="s">日用品 · 3 人</div></div><div class="amount">¥89.90</div><div class="person"><span class="avatar">孙</span>孙启翔</div><div>3 人</div><div class="person"><span class="avatar">沈</span>沈思涵<span class="self">本人</span></div><div style="text-align:right"><button class="row-btn" disabled>自审禁用</button></div></div>
+            <div class="trow"><div class="time"><b>10-25 21:18</b><br>昨天</div><div><span class="type">收入</span></div><div class="summary"><div class="n">旧书出售</div><div class="s">其他收入 · 3 人</div></div><div class="amount in">¥120.00</div><div class="person"><span class="avatar">沈</span>沈思涵</div><div>3 人</div><div class="person"><span class="avatar">李</span>李同学</div><div style="text-align:right"><button class="row-btn">审核</button></div></div>
+            <div class="trow"><div class="time"><b>10-25 20:06</b><br>昨天</div><div><span class="type">支出</span></div><div class="summary"><div class="n">水电费</div><div class="s">水电 · 4 人</div></div><div class="amount">¥186.40</div><div class="person"><span class="avatar">李</span>李同学</div><div>4 人</div><div class="person"><span class="avatar">李</span>李同学</div><div style="text-align:right"><button class="row-btn">审核</button></div></div>
+            <div class="trow"><div class="time"><b>10-25 19:32</b><br>昨天</div><div><span class="type">支出</span></div><div class="summary"><div class="n">外卖</div><div class="s">餐饮 · 3 人</div></div><div class="amount">¥76.00</div><div class="person"><span class="avatar">王</span>王同学</div><div>3 人</div><div class="person"><span class="avatar">王</span>王同学</div><div style="text-align:right"><button class="row-btn">审核</button></div></div>
+            <div class="trow"><div class="time"><b>10-25 18:10</b><br>昨天</div><div><span class="type">收入</span></div><div class="summary"><div class="n">活动补贴</div><div class="s">补贴 · 4 人</div></div><div class="amount in">¥200.00</div><div class="person"><span class="avatar">孙</span>孙启翔</div><div>4 人</div><div class="person"><span class="avatar">孙</span>孙启翔</div><div style="text-align:right"><button class="row-btn">审核</button></div></div>
+          </div>
+          <div class="table-foot"><span>共 12 条 · 已选 1 条</span><div class="pages"><span class="page">‹</span><span class="page on">1</span><span class="page">2</span><span class="page">›</span></div></div>
+        </section>
+        <aside class="panel detail">
+          <div class="detail-head"><div class="panel-title">审核详情</div><svg class="icon sm" style="color:var(--gray-500)"><use href="#i-x"/></svg></div>
+          <div class="detail-body">
+            <div class="tags"><span class="tag warn">待审核</span><span class="tag">支出</span><span class="tag">餐饮</span></div>
+            <div class="detail-amount"><span class="cur">¥</span>268.00</div>
+            <div class="detail-title">周末聚餐</div>
+            <div class="meta">2026-10-25 · 孙启翔提交 · 沈思涵付款 · 4 人</div>
+            <div class="sec-title">分摊明细 <span style="font-weight:400">平均分摊</span></div>
+            <div class="alloc-row"><span class="avatar">沈</span><span class="name">沈思涵</span><span class="val">¥67.00</span></div>
+            <div class="alloc-row"><span class="avatar">孙</span><span class="name">孙启翔</span><span class="val">¥67.00</span></div>
+            <div class="alloc-row"><span class="avatar">李</span><span class="name">李同学</span><span class="val">¥67.00</span></div>
+            <div class="alloc-row"><span class="avatar">王</span><span class="name">王同学</span><span class="val">¥67.00</span></div>
+            <div class="total"><span>合计</span><b>¥268.00 · 已平衡</b></div>
+            <div class="verify"><svg class="icon sm"><use href="#i-shield"/></svg><div><div class="t">独立性校验通过</div><div class="s">审核人不是录入人，也不是待处理申请的申请人；参与分摊不影响审核。</div></div></div>
+            <div class="opinion"><div class="l">审核意见 <span style="font-weight:400">驳回时必填</span></div><div class="box">选填；驳回时请说明原因。</div></div>
+          </div>
+          <div class="detail-foot"><button class="dbtn ghost"><svg class="icon sm"><use href="#i-x"/></svg>驳回</button><button class="dbtn fill"><svg class="icon sm"><use href="#i-check"/></svg>通过</button></div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

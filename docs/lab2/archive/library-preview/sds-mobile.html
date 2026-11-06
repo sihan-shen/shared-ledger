@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Simple Design System · 账本首页预览</title>
+<style>
+  :root{
+    --black:#111111; --brand:#1E1E1E; --gray-100:#F5F5F5; --gray-200:#E6E6E6; --gray-300:#D9D9D9;
+    --gray-500:#757575; --gray-600:#444444; --white:#FFFFFF; --green:#14AE5C; --green-soft:#EBFFEE;
+    --yellow:#E5A000; --yellow-soft:#FFFBEB; --red:#EC221F; --red-soft:#FEE9E7;
+    --border:#E6E6E6; --radius:8px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:390px;height:844px;overflow:hidden;background:var(--white)}
+  body{font-family:Inter,"Noto Sans CJK SC","Noto Sans SC",sans-serif;color:var(--black);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5}
+  .app{width:390px;height:844px;background:var(--white);position:relative;overflow:hidden}
+  .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:16px;height:16px}
+  .topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border)}
+  .brand{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:-.2px}
+  .mark{width:22px;height:22px;border:1px solid var(--black);border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700}
+  .who{width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:grid;place-items:center;font-size:11px;font-weight:600}
+  .content{padding:20px 20px 88px}
+  .balance{padding:4px 0 18px;border-bottom:1px solid var(--border)}
+  .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-500);font-weight:600}
+  .amount{font-size:38px;font-weight:600;letter-spacing:-1.2px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .amount .cur{font-size:18px;font-weight:500;margin-right:2px;color:var(--gray-600)}
+  .sub{display:flex;gap:16px;margin-top:3px;font-size:12px;color:var(--gray-500)}
+  .sub b{color:var(--black);font-weight:600}
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+  .q{height:64px;border:1px solid var(--border);border-radius:var(--radius);background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;color:var(--gray-600)}
+  .q .icon{color:var(--black)}
+  .section{margin-top:18px;border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between}
+  .sec-title{font-size:13px;font-weight:600;letter-spacing:-.1px}
+  .sec-link{font-size:11px;color:var(--gray-500);text-decoration:underline;text-underline-offset:2px}
+  .budget-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px}
+  .budget-used{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+  .budget-used small{font-size:11px;font-weight:400;color:var(--gray-500);margin-left:3px}
+  .budget-right{text-align:right;font-size:11px;color:var(--gray-500);line-height:1.5}
+  .bar{height:6px;background:var(--gray-100);border-radius:99px;overflow:hidden;margin-top:10px}
+  .bar span{display:block;height:100%;width:62%;background:var(--black);border-radius:99px}
+  .meta{display:flex;justify-content:space-between;margin-top:7px;font-size:10px;color:var(--gray-500)}
+  .todo{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border)}
+  .todo:first-of-type{border-top:0;margin-top:2px}
+  .todo .dot{width:6px;height:6px;border-radius:50%;background:var(--black)}
+  .todo-main{flex:1}
+  .todo-t{font-size:13px;font-weight:600}
+  .todo-s{font-size:11px;color:var(--gray-500);margin-top:1px}
+  .chev{color:var(--gray-500);display:flex}
+  .recent-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px}
+  .recent-title{font-size:13px;font-weight:600}
+  .list{border-top:1px solid var(--border)}
+  .tx{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .tx-ico{width:32px;height:32px;border:1px solid var(--border);border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:600;color:var(--gray-600);background:var(--gray-100)}
+  .tx-main{flex:1;min-width:0}
+  .tx-t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx-s{font-size:10px;color:var(--gray-500);margin-top:2px}
+  .tx-right{text-align:right}
+  .tx-a{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+  .tx-a.pos{color:var(--green)}
+  .tag{display:inline-block;margin-top:3px;font-size:9px;padding:3px 6px;border-radius:4px;background:var(--gray-100);color:var(--gray-600)}
+  .tag.warn{background:var(--yellow-soft);color:#7A4D00}
+  .tag.ok{background:var(--green-soft);color:#0B5A2B}
+  .navbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:var(--white);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;padding:0 10px}
+  .nav{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--gray-500)}
+  .nav.active{color:var(--black);font-weight:600}
+  .nav .icon{width:20px;height:20px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14v4M3 7v10a2 2 0 0 0 2 2h14v-4M21 12h-5a2 2 0 0 0 0 4h5z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-7H9v7H3z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.7-3.5 3.5-5.2 7-5.2S18.3 16.5 19 20"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+</svg>
+<div class="app">
+  <header class="topbar"><div class="brand"><div class="mark">L</div><span>共享账本</span></div><div class="who">沈</div></header>
+  <main class="content">
+    <section class="balance">
+      <div class="eyebrow">我的净余额</div>
+      <div class="amount"><span class="cur">¥</span>120.00</div>
+      <div class="sub"><span>应收 <b>¥320.00</b></span><span>应付 <b>¥200.00</b></span><span>4 人</span></div>
+    </section>
+    <div class="quick">
+      <div class="q"><svg class="icon sm"><use href="#i-plus"/></svg><span>记一笔</span></div>
+      <div class="q"><svg class="icon sm"><use href="#i-clock"/></svg><span>待审核 2</span></div>
+      <div class="q"><svg class="icon sm"><use href="#i-wallet"/></svg><span>去还款</span></div>
+    </div>
+    <section class="section">
+      <div class="sec-head"><div class="sec-title">10 月预算</div><div class="sec-link">管理</div></div>
+      <div class="budget-row"><div class="budget-used">¥1,860<small>已用</small></div><div class="budget-right">剩余 <b>¥1,140</b><br>预算 ¥3,000</div></div>
+      <div class="bar"><span></span></div>
+      <div class="meta"><span>已使用 62%</span><span>未超支</span></div>
+    </section>
+    <section class="section">
+      <div class="sec-head"><div class="sec-title">待办</div><div class="sec-link">3 项</div></div>
+      <div class="todo"><span class="dot"></span><div class="todo-main"><div class="todo-t">2 笔支出待你审核</div><div class="todo-s">餐饮 · 日用品 · 最早 10-25</div></div><span class="chev"><svg class="icon sm"><use href="#i-chev"/></svg></span></div>
+      <div class="todo"><span class="dot" style="background:var(--gray-500)"></span><div class="todo-main"><div class="todo-t">1 笔还款待确认</div><div class="todo-s">孙启翔 → 你 · ¥50.00</div></div><span class="chev"><svg class="icon sm"><use href="#i-chev"/></svg></span></div>
+    </section>
+    <div class="recent-head"><div class="recent-title">最近账目</div><div class="sec-link">全部</div></div>
+    <section class="list">
+      <div class="tx"><div class="tx-ico">餐</div><div class="tx-main"><div class="tx-t">周末聚餐</div><div class="tx-s">10-25 · 沈思涵付款 · 4 人</div></div><div class="tx-right"><div class="tx-a">-¥268.00</div><span class="tag warn">待审核</span></div></div>
+      <div class="tx"><div class="tx-ico">日</div><div class="tx-main"><div class="tx-t">洗衣液、纸巾</div><div class="tx-s">10-24 · 孙启翔付款 · 3 人</div></div><div class="tx-right"><div class="tx-a">-¥89.90</div><span class="tag ok">已审核</span></div></div>
+    </section>
+  </main>
+  <nav class="navbar">
+    <div class="nav active"><svg class="icon"><use href="#i-home"/></svg><span>首页</span></div>
+    <div class="nav"><svg class="icon"><use href="#i-list"/></svg><span>账目</span></div>
+    <div class="nav"><svg class="icon"><use href="#i-wallet"/></svg><span>结算</span></div>
+    <div class="nav"><svg class="icon"><use href="#i-user"/></svg><span>我的</span></div>
+  </nav>
+</div>
+</body>
+</html>

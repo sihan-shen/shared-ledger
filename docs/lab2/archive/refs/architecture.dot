@@ -1,0 +1,40 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="#f8fafc", pad=0.45, nodesep=0.45, ranksep=0.55,
+         fontname="Noto Sans CJK SC", fontsize=13, newrank=true];
+  node [shape=box, style="rounded,filled", fontname="Noto Sans CJK SC", fontsize=11,
+        color="#cbd5e1", fillcolor="#ffffff", penwidth=1.2, margin="0.18,0.11"];
+  edge [color="#94a3b8", penwidth=1.2, arrowsize=0.7, fontname="Noto Sans CJK SC", fontsize=9];
+
+  subgraph cluster_browser {
+    label="浏览器（响应式 Web）"; fontsize=12; fontcolor="#115e59";
+    style="rounded,dashed"; color="#99f6e4"; bgcolor="#f0fdfa"; margin=14;
+    mobile [label="用户端 SPA\nVue 3 + Vant 4\n登录 / 记账 / 审核 / 结算", fillcolor="#ffffff"];
+    admin  [label="管理端 SPA\nVue 3 + Element Plus\n成员 / 预算 / 统计 / 日志", fillcolor="#ffffff"];
+    shared [label="共享层：Router · Pinia · API Client · 设计 Tokens", fillcolor="#ccfbf1", color="#5eead4"];
+    { rank=same; mobile; admin; }
+    mobile -> shared [style=dotted, arrowhead=none, color="#5eead4"];
+    admin  -> shared [style=dotted, arrowhead=none, color="#5eead4"];
+  }
+
+  nginx [label="Nginx\n静态资源 + /api 反向代理", fillcolor="#f1f5f9"];
+
+  subgraph cluster_api {
+    label="FastAPI 应用（单体模块化）"; fontsize=12; fontcolor="#14532d";
+    style="rounded"; color="#bbf7d0"; bgcolor="#f0fdf4"; margin=14;
+    api    [label="API 层\n鉴权 · 参数校验 · 幂等键 · 错误映射", fillcolor="#ffffff"];
+    domain [label="领域模块\n账号 · 账本 · 成员 · 收支 · 审核\n预算 · 查询 · 结算 · 审计", fillcolor="#dcfce7", color="#86efac"];
+    repo   [label="Repository\nSQLAlchemy · 事务边界", fillcolor="#ffffff"];
+    api -> domain -> repo;
+  }
+
+  pg [label="PostgreSQL 16\n账本 · 版本 · 分配 · 还款 · 日志", shape=cylinder, fillcolor="#ecfdf5", color="#86efac"];
+  backup [label="每日 pg_dump\n保留 7 份", shape=note, fillcolor="#f8fafc"];
+  note [label="所有余额 / 预算 / 状态变更\n在同一数据库事务内完成；\n审计日志同事务写入。", shape=note, fillcolor="#fffbeb", color="#fde68a", fontsize=10];
+
+  shared -> nginx [style=dashed, color="#94a3b8", label="HTTPS"];
+  nginx -> api;
+  repo -> pg;
+  pg -> backup [style=dashed, label="备份"];
+  api -> shared [style=dashed, label="OpenAPI → TS 类型", constraint=false, color="#0f766e", fontcolor="#0f766e"];
+  domain -> note [style=dotted, arrowhead=none, color="#d97706"];
+}

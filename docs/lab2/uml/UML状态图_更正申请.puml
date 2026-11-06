@@ -1,0 +1,40 @@
+@startuml UML状态图_更正申请
+' 更正/作废申请状态机（初稿）
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #64748B
+skinparam ArrowFontColor #475569
+skinparam stateBorderColor #94A3B8
+skinparam stateBackgroundColor #FFFBEB
+skinparam stateFontColor #0F172A
+skinparam noteBackgroundColor #F0FDFA
+skinparam noteBorderColor #99F6E4
+skinparam noteFontColor #115E59
+
+state "待处理" as Pending
+state "已通过" as Approved
+state "已驳回" as Rejected
+state "已撤回" as Withdrawn
+
+[*] --> Pending : 提交申请\n[同一记录最多一项待处理]
+Pending --> Approved : 合格审核员通过\n[处理人 ≠ 申请人、≠ 版本录入人；依据版本匹配]
+Pending --> Rejected : 驳回\n[填写原因]
+Pending --> Withdrawn : 申请人撤回
+Approved --> [*]
+Rejected --> [*] : 原记录不变；重提另建 attempt
+Withdrawn --> [*] : 原记录不变；重提另建 attempt
+
+note right of Pending
+  处理前原记录继续有效；
+  不做预扣、不改统计/预算/余额。
+end note
+note bottom of Approved
+  更正：生成新版本，旧版本 superseded，只计一次；
+  作废：原记录退出计算，保留历史与还款关联。
+  驳回/撤回后重提 = 新建 attempt（attempt_no+1），
+  旧实例终结；同一收支最多一个 PENDING。
+end note
+@enduml

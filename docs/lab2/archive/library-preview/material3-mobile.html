@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Material 3 · 账本首页预览</title>
+<style>
+  :root{
+    --primary:#6750A4; --on-primary:#FFFFFF; --primary-container:#EADDFF; --on-primary-container:#21005D;
+    --secondary:#625B71; --secondary-container:#E8DEF8; --on-secondary-container:#1D192B;
+    --surface:#FEF7FF; --surface-container-low:#F7F2FA; --surface-container:#F3EDF7; --surface-container-high:#ECE6F0;
+    --on-surface:#1D1B20; --on-surface-variant:#49454F; --outline:#79747E; --outline-variant:#CAC4D0;
+    --error:#B3261E; --error-container:#F9DEDC; --success:#386A20; --warning:#7D5260;
+    --shape-xs:4px; --shape-sm:8px; --shape-md:12px; --shape-lg:16px; --shape-xl:28px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:390px;height:844px;overflow:hidden;background:var(--surface)}
+  body{font-family:Roboto,"Noto Sans CJK SC","Noto Sans SC",sans-serif;color:var(--on-surface);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5}
+  .app{position:relative;width:390px;height:844px;overflow:hidden;background:var(--surface)}
+  .icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+  .icon.sm{width:20px;height:20px}
+  .topbar{height:60px;display:flex;align-items:center;gap:12px;padding:0 16px}
+  .menu{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--on-surface-variant)}
+  .title{font-size:22px;font-weight:500;letter-spacing:0;flex:1}
+  .avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-container);color:var(--on-primary-container);display:grid;place-items:center;font-size:14px;font-weight:600}
+  .content{padding:0 16px 96px}
+  .hero{position:relative;background:var(--primary-container);color:var(--on-primary-container);border-radius:var(--shape-xl);padding:16px;overflow:hidden}
+  .hero:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(103,80,164,.10);right:-55px;top:-70px}
+  .hero .label{font-size:14px;font-weight:500;opacity:.78}
+  .hero .amount{font-size:32px;font-weight:600;letter-spacing:-.5px;margin-top:3px;font-variant-numeric:tabular-nums}
+  .hero .amount .cur{font-size:20px;font-weight:500;margin-right:2px}
+  .hero .sub{font-size:13px;opacity:.72;margin-top:5px}
+  .chips{display:flex;gap:8px;margin-top:8px}
+  .chip{height:26px;padding:0 12px;border:1px solid rgba(33,0,93,.18);border-radius:8px;display:flex;align-items:center;font-size:12px;font-weight:500}
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .quick .q{background:var(--surface-container);border-radius:var(--shape-lg);padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .q .ico{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--secondary-container);color:var(--on-secondary-container)}
+  .q .t{font-size:12px;font-weight:500;color:var(--on-surface-variant)}
+  .card{background:var(--surface-container-low);border-radius:var(--shape-lg);padding:12px;margin-top:10px}
+  .card-head{display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-size:14px;font-weight:600}
+  .card-link{font-size:12px;color:var(--primary);font-weight:500}
+  .budget-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px}
+  .budget-used{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+  .budget-used small{font-size:12px;font-weight:400;color:var(--on-surface-variant);margin-left:3px}
+  .budget-right{text-align:right;font-size:12px;color:var(--on-surface-variant);line-height:1.5}
+  .progress{height:8px;border-radius:99px;background:var(--surface-container-high);overflow:hidden;margin-top:10px}
+  .progress span{display:block;height:100%;width:62%;background:var(--primary);border-radius:99px}
+  .meta-line{display:flex;justify-content:space-between;margin-top:7px;font-size:11px;color:var(--on-surface-variant)}
+  .todo-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--outline-variant)}
+  .todo-row:first-of-type{border-top:0;margin-top:4px}
+  .todo-dot{width:9px;height:9px;border-radius:50%;background:var(--primary)}
+  .todo-main{flex:1}
+  .todo-t{font-size:14px;font-weight:500}
+  .todo-s{font-size:12px;color:var(--on-surface-variant);margin-top:1px}
+  .chev{color:var(--on-surface-variant);display:flex}
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px}
+  .section-title{font-size:16px;font-weight:600}
+  .list{background:var(--surface-container-low);border-radius:var(--shape-lg);padding:1px 12px}
+  .tx{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--outline-variant)}
+  .tx:last-child{border-bottom:0}
+  .tx-ico{width:34px;height:34px;border-radius:50%;background:var(--secondary-container);color:var(--on-secondary-container);display:grid;place-items:center;font-size:13px;font-weight:600}
+  .tx-main{flex:1;min-width:0}
+  .tx-t{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx-s{font-size:12px;color:var(--on-surface-variant);margin-top:2px}
+  .tx-right{text-align:right}
+  .tx-a{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+  .tx-a.pos{color:var(--success)}
+  .tag{display:inline-block;margin-top:3px;font-size:10px;padding:3px 6px;border-radius:6px;background:var(--surface-container-high);color:var(--on-surface-variant)}
+  .tag.warn{background:#FFDAD6;color:#410002}
+  .tag.ok{background:#D7F5C8;color:#0C3B00}
+  .fab{position:absolute;right:18px;bottom:90px;width:58px;height:58px;border-radius:16px;background:var(--primary);color:#fff;display:grid;place-items:center;box-shadow:0 6px 14px rgba(29,27,32,.18)}
+  .fab .icon{width:26px;height:26px}
+  .navbar{position:absolute;left:0;right:0;bottom:0;height:76px;background:var(--surface-container);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;padding:8px 10px 10px}
+  .nav{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--on-surface-variant);font-size:12px;font-weight:500}
+  .nav .pill{width:60px;height:30px;border-radius:16px;display:grid;place-items:center}
+  .nav.active{color:var(--on-surface)}
+  .nav.active .pill{background:var(--secondary-container);color:var(--on-secondary-container)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14v4M3 7v10a2 2 0 0 0 2 2h14v-4M21 12h-5a2 2 0 0 0 0 4h5z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-7H9v7H3z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.7-3.5 3.5-5.2 7-5.2S18.3 16.5 19 20"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+</svg>
+<div class="app">
+  <header class="topbar"><div class="menu"><svg class="icon"><use href="#i-menu"/></svg></div><div class="title">合租小屋</div><div class="avatar">沈</div></header>
+  <main class="content">
+    <section class="hero">
+      <div class="label">我的净余额</div>
+      <div class="amount"><span class="cur">¥</span>120.00</div>
+      <div class="sub">应收 ¥320.00 · 应付 ¥200.00</div>
+      <div class="chips"><span class="chip">4 名成员</span><span class="chip">管理员</span></div>
+    </section>
+    <div class="quick">
+      <div class="q"><div class="ico"><svg class="icon sm"><use href="#i-plus"/></svg></div><div class="t">记一笔</div></div>
+      <div class="q"><div class="ico"><svg class="icon sm"><use href="#i-clock"/></svg></div><div class="t">待审核 2</div></div>
+      <div class="q"><div class="ico"><svg class="icon sm"><use href="#i-wallet"/></svg></div><div class="t">去还款</div></div>
+    </div>
+    <section class="card">
+      <div class="card-head"><div class="card-title">10 月预算</div><div class="card-link">管理</div></div>
+      <div class="budget-row"><div class="budget-used">¥1,860<small>已用</small></div><div class="budget-right">剩余 <b>¥1,140</b><br>预算 ¥3,000</div></div>
+      <div class="progress"><span></span></div>
+      <div class="meta-line"><span>已使用 62%</span><span>未超支</span></div>
+    </section>
+    <section class="card">
+      <div class="card-head"><div class="card-title">待办</div><div class="card-link">3 项</div></div>
+      <div class="todo-row"><span class="todo-dot"></span><div class="todo-main"><div class="todo-t">2 笔支出待你审核</div><div class="todo-s">餐饮 · 日用品 · 最早 10-25</div></div><span class="chev"><svg class="icon sm"><use href="#i-chev"/></svg></span></div>
+      <div class="todo-row"><span class="todo-dot" style="background:var(--secondary)"></span><div class="todo-main"><div class="todo-t">1 笔还款待确认</div><div class="todo-s">孙启翔 → 你 · ¥50.00</div></div><span class="chev"><svg class="icon sm"><use href="#i-chev"/></svg></span></div>
+    </section>
+    <div class="section-head"><div class="section-title">最近账目</div><div class="card-link">全部</div></div>
+    <section class="list">
+      <div class="tx"><div class="tx-ico">餐</div><div class="tx-main"><div class="tx-t">周末聚餐</div><div class="tx-s">10-25 · 沈思涵付款 · 4 人</div></div><div class="tx-right"><div class="tx-a">-¥268.00</div><span class="tag warn">待审核</span></div></div>
+    </section>
+  </main>
+  <nav class="navbar">
+    <div class="nav active"><div class="pill"><svg class="icon sm"><use href="#i-home"/></svg></div><span>首页</span></div>
+    <div class="nav"><div class="pill"><svg class="icon sm"><use href="#i-list"/></svg></div><span>账目</span></div>
+    <div class="nav"><div class="pill"><svg class="icon sm"><use href="#i-wallet"/></svg></div><span>结算</span></div>
+    <div class="nav"><div class="pill"><svg class="icon sm"><use href="#i-user"/></svg></div><span>我的</span></div>
+  </nav>
+</div>
+</body>
+</html>

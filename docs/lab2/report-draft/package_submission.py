@@ -14,8 +14,9 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parent
 WORKSPACE = ROOT.parents[2]
 NAME = "实验2_241220051_沈思涵"
-STAGE = WORKSPACE / ".stage" / NAME
-OUTPUT = WORKSPACE / f"{NAME}.zip"
+SUBMISSIONS = WORKSPACE / "submissions/lab2"
+STAGE = SUBMISSIONS / NAME
+OUTPUT = SUBMISSIONS / f"{NAME}.zip"
 MANIFEST = ROOT / "打包清单.json"
 UI_FILES = [
     ("login-current.png", "01_账号登录.png"),

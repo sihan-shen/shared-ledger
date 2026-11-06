@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>用户端 · 登录</title>
+<link rel="stylesheet" href="mobile-screens.css">
+<style>
+  body{background:#0b3b38}
+  .login{position:relative;width:390px;height:844px;overflow:hidden;background:linear-gradient(150deg,#0b3b38 0%,#115e59 45%,#0f766e 74%,#14b8a6 100%);color:#fff}
+  .glow{position:absolute;border-radius:50%;background:rgba(255,255,255,.075);pointer-events:none}
+  .g1{width:260px;height:260px;right:-100px;top:-90px}
+  .g2{width:150px;height:150px;left:-60px;top:250px;background:rgba(255,255,255,.05)}
+  .g3{width:90px;height:90px;right:40px;top:330px;background:rgba(255,255,255,.045)}
+  .wrap{position:relative;z-index:1;padding:24px 24px 0}
+  .brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:rgba(255,255,255,.92)}
+  .logo{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:16px;font-weight:800}
+  .headline{font-size:31px;font-weight:800;letter-spacing:1px;margin-top:58px;line-height:1.25}
+  .headline span{color:#99f6e4}
+  .subline{font-size:12px;color:rgba(255,255,255,.7);margin-top:12px;letter-spacing:.4px}
+  .art{position:relative;height:96px;margin-top:26px}
+  .chip{position:absolute;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:7px 10px;backdrop-filter:blur(8px)}
+  .chip .ci{width:23px;height:23px;border-radius:7px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:9px;font-weight:700}
+  .chip .ct{font-size:10px;color:rgba(255,255,255,.88)}
+  .chip .ca{font-size:11px;font-weight:700;color:#fff;margin-left:3px}
+  .chip.c1{left:0;top:0;transform:rotate(-2deg)}
+  .chip.c2{right:0;top:26px;transform:rotate(2deg)}
+  .chip.c3{left:54px;top:62px;transform:rotate(-1deg)}
+  .card{position:absolute;z-index:2;left:18px;right:18px;bottom:26px;background:#fff;border-radius:24px;padding:22px 20px 18px;color:var(--ink);box-shadow:0 26px 60px rgba(0,0,0,.28)}
+  .card h1{font-size:21px;font-weight:800;margin:0;letter-spacing:.4px}
+  .card .desc{font-size:11px;color:var(--faint);margin-top:5px}
+  .field{margin-top:14px}
+  .field label{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-bottom:6px;letter-spacing:.3px}
+  .input{height:46px;border-radius:11px;background:#f7f9fc;border:1px solid #e6ebf3;display:flex;align-items:center;gap:8px;padding:0 12px;color:#94a3b8}
+  .input input{border:0;outline:0;background:transparent;flex:1;font-family:inherit;font-size:13px;color:var(--ink);letter-spacing:.3px}
+  .input .eye{display:flex;color:#b6c2d2}
+  .error{display:flex;align-items:flex-start;gap:6px;margin-top:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:9px;padding:7px 9px;color:#b91c1c;font-size:10px;line-height:1.5}
+  .error .icon{width:13px;height:13px;margin-top:1px}
+  .login-btn{width:100%;height:48px;border-radius:12px;margin-top:14px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;border:0;font-family:inherit;font-size:14px;font-weight:700;box-shadow:0 8px 18px rgba(15,118,110,.28)}
+  .tip{font-size:9px;color:#94a3b8;text-align:center;margin-top:10px;line-height:1.6}
+  .forgot{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9;font-size:10px;color:var(--brand)}
+  .foot{position:absolute;z-index:2;left:0;right:0;bottom:8px;text-align:center;font-size:9px;color:rgba(255,255,255,.42)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.7-3.5 3.5-5.2 7-5.2S18.3 16.5 19 20"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M3.5 12S6.5 6.5 12 6.5 20.5 12 20.5 12 17.5 17.5 12 17.5 3.5 12 3.5 12Z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.3h.01"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+</svg>
+
+<div class="login">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="wrap">
+    <div class="brand"><div class="logo">账</div><span>共享账本</span></div>
+    <div class="headline">一起记，<br><span>清楚算。</span></div>
+    <div class="subline">合租 · 旅行 · 社团，每一笔都有来处</div>
+    <div class="art">
+      <div class="chip c1"><span class="ci">餐</span><span class="ct">周末聚餐</span><span class="ca">¥268</span></div>
+      <div class="chip c2"><span class="ci">日</span><span class="ct">本月已用</span><span class="ca">62%</span></div>
+      <div class="chip c3"><span class="ci">结</span><span class="ct">我的净余额</span><span class="ca">+¥120</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1>登录</h1>
+    <div class="desc">使用维护人员开通的账号，不开放自行注册</div>
+    <div class="field">
+      <label>账号</label>
+      <div class="input"><svg class="icon sm"><use href="#i-user"/></svg><input value="shenshihan" autocomplete="username"><span style="font-size:9px;color:#cbd5e1">@</span></div>
+    </div>
+    <div class="field">
+      <label>密码</label>
+      <div class="input"><svg class="icon sm"><use href="#i-lock"/></svg><input type="password" value="password" autocomplete="current-password"><span class="eye"><svg class="icon sm"><use href="#i-eye"/></svg></span></div>
+    </div>
+    <div class="error"><svg class="icon"><use href="#i-alert"/></svg><span>账号或密码错误，还可尝试 3 次。<br>连续失败 5 次将暂停登录 15 分钟。</span></div>
+    <button class="login-btn">登录</button>
+    <div class="tip">首次登录需修改初始密码；账号不存在与密码错误使用同一提示</div>
+    <div class="forgot">忘记密码？联系维护人员重置 <svg class="icon" style="width:11px;height:11px"><use href="#i-chev-r"/></svg></div>
+  </div>
+
+  <div class="foot">仅限受邀成员使用 · 维护账号不自动拥有账本业务权限</div>
+</div>
+</body>
+</html>

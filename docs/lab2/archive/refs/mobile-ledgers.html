@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>用户端 · 我的账本</title>
+<link rel="stylesheet" href="mobile-screens.css">
+<style>
+  .content{padding-bottom:86px}
+  .greet{margin:3px 2px 14px}
+  .greet h2{font-size:22px;font-weight:800;margin:0;letter-spacing:.2px}
+  .greet p{font-size:11px;color:var(--muted);margin:5px 0 0}
+  .ledger-card{position:relative;padding:14px 14px 12px;margin-bottom:10px;overflow:hidden}
+  .ledger-card.active{border-color:#99f6e4;box-shadow:0 8px 22px rgba(15,118,110,.10)}
+  .ledger-card.active:before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--brand)}
+  .lc-top{display:flex;align-items:center;gap:10px}
+  .lc-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:14px;font-weight:800;flex:0 0 auto}
+  .lc-icon.home{background:#e6fffb;color:#0f766e}
+  .lc-icon.trip{background:#eef2ff;color:#6366f1}
+  .lc-icon.club{background:#fff7ed;color:#d97706}
+  .lc-main{flex:1;min-width:0}
+  .lc-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .role{font-size:9px;font-weight:600;line-height:1;padding:3px 5px;border-radius:4px;background:#f0fdfa;color:#0f766e;border:1px solid #ccfbf1}
+  .role.review{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+  .role.member{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
+  .lc-sub{font-size:10px;color:var(--faint);margin-top:3px;display:flex;align-items:center;gap:6px}
+  .lc-sub .dot{width:2px;height:2px;border-radius:50%;background:#cbd5e1}
+  .lc-arrow{color:#cbd5e1;display:flex}
+  .lc-bottom{display:flex;align-items:flex-end;justify-content:space-between;margin-top:11px;padding-top:10px;border-top:1px solid #f1f5f9}
+  .lc-stat{font-size:9px;color:var(--faint);line-height:1.5}
+  .lc-stat b{display:block;font-size:13px;color:#334155;font-variant-numeric:tabular-nums;margin-top:1px}
+  .lc-stat.right{text-align:right}
+  .lc-stat .pos{color:#15803d}.lc-stat .neg{color:#dc2626}
+  .archived{display:flex;align-items:center;gap:10px;padding:11px 14px;margin-top:2px}
+  .archived .lc-icon{width:34px;height:34px;border-radius:11px;background:#f1f5f9;color:#94a3b8;font-size:12px}
+  .archived .lc-name{font-size:12px;color:#64748b}
+  .archived .tag{font-size:9px;color:#94a3b8;background:#f8fafc;border:1px solid #eef2f8;padding:2px 5px;border-radius:4px;margin-left:6px}
+  .bottom-action{position:absolute;z-index:10;left:16px;right:16px;bottom:18px}
+  .bottom-action .btn{width:100%;height:46px;box-shadow:0 8px 18px rgba(15,118,110,.18)}
+  .note{font-size:9px;color:#b6c2d2;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="2.8"/><path d="M3.5 19c.6-3 2.8-4.4 5.5-4.4s4.9 1.4 5.5 4.4M16 6.2a2.5 2.5 0 0 1 0 4.6M17.5 14.6c2 .3 3.2 1.7 3.6 4.4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6M10 20h4"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="left"><div class="logo" style="width:30px;height:30px;border-radius:9px;background:#0f766e;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800">账</div></div>
+    <h1>我的账本</h1>
+    <div class="right"><div class="icon-btn" style="background:#f0fdfa;color:#0f766e;border:1px solid #ccfbf1"><svg class="icon"><use href="#i-plus"/></svg></div></div>
+  </header>
+
+  <main class="content">
+    <div class="greet"><h2>晚上好，沈思涵</h2><p>你参与 3 个使用中的账本 · 1 个已归档</p></div>
+
+    <div class="section-head" style="margin-top:0"><div class="section-title">使用中</div><div class="link">3 个</div></div>
+
+    <section class="card ledger-card active">
+      <div class="lc-top">
+        <div class="lc-icon home">合</div>
+        <div class="lc-main">
+          <div class="lc-name">合租小屋 <span class="role">管理员</span></div>
+          <div class="lc-sub"><svg class="icon" style="width:11px;height:11px"><use href="#i-users"/></svg>4 名成员<span class="dot"></span>最近 10-26 有更新</div>
+        </div>
+        <span class="lc-arrow"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+      </div>
+      <div class="lc-bottom">
+        <div class="lc-stat">本月支出<b>¥1,860.00</b></div>
+        <div class="lc-stat">本月预算<b>¥3,000.00</b></div>
+        <div class="lc-stat right">我的净余额<b class="pos">+¥120.00</b></div>
+      </div>
+    </section>
+
+    <section class="card ledger-card">
+      <div class="lc-top">
+        <div class="lc-icon trip">旅</div>
+        <div class="lc-main">
+          <div class="lc-name">旅行基金 <span class="role member">成员</span></div>
+          <div class="lc-sub"><svg class="icon" style="width:11px;height:11px"><use href="#i-users"/></svg>6 名成员<span class="dot"></span>目标 ¥5,000</div>
+        </div>
+        <span class="lc-arrow"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+      </div>
+      <div class="lc-bottom">
+        <div class="lc-stat">已筹集<b>¥2,300.00</b></div>
+        <div class="lc-stat">进度<b>46%</b></div>
+        <div class="lc-stat right">我的净余额<b class="neg">-¥320.00</b></div>
+      </div>
+    </section>
+
+    <section class="card ledger-card">
+      <div class="lc-top">
+        <div class="lc-icon club">社</div>
+        <div class="lc-main">
+          <div class="lc-name">社团活动 <span class="role review">审核员</span></div>
+          <div class="lc-sub"><svg class="icon" style="width:11px;height:11px"><use href="#i-users"/></svg>12 名成员<span class="dot"></span>3 笔待你审核</div>
+        </div>
+        <span class="lc-arrow"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+      </div>
+      <div class="lc-bottom">
+        <div class="lc-stat">本月支出<b>¥4,280.00</b></div>
+        <div class="lc-stat">待审核<b style="color:#c2410c">3 笔</b></div>
+        <div class="lc-stat right">我的净余额<b class="pos">+¥80.00</b></div>
+      </div>
+    </section>
+
+    <div class="section-head"><div class="section-title">已归档</div><div class="link">1 个</div></div>
+    <section class="card archived">
+      <div class="lc-icon">春</div>
+      <div class="lc-main"><div class="lc-name">2026 春游 <span class="tag">只读</span></div><div class="lc-sub">2026-04 归档 · 余额已结清</div></div>
+      <span class="lc-arrow"><svg class="icon sm"><use href="#i-chev-r"/></svg></span>
+    </section>
+  </main>
+
+  <div class="bottom-action">
+    <button class="btn primary"><svg class="icon" style="width:18px;height:18px"><use href="#i-plus"/></svg>新建账本</button>
+    <div class="note">创建者自动成为管理员；空账本才可删除</div>
+  </div>
+</div>
+</body>
+</html>
